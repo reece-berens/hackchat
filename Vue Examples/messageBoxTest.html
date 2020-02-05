@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!-- From https://codepen.io/FumioNonaka/pen/mRgYXe -->
+<html lang="en">
+	<head>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="messageBoxTestJS.js" type="text/javascript" defer="defer"></script>
+		<title>Vue App</title>
+	</head>
+
+	<body>
+		<div id="app" class="container">
+			<h2>Message List</h2>
+			<ul class="list-unstyled">
+				<li v-for="todo in todos">
+					<label>
+						<span v-bind:class="{'done': todo.done}">{{todo.text}}</span>
+					</label>
+				</li>
+			</ul>
+			<p>
+				<input type="text" v-model="todoText" placeholder="add new todo here" />
+				<button v-on:click="addTodo()" class="btn btn-primary btn-sm">Submit</button>
+			</p>
+		</div>
+	</body>
+</html>
