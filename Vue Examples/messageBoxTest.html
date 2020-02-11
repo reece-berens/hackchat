@@ -13,17 +13,28 @@
 	<body>
 		<div id="app" class="container">
 			<h2>Message List</h2>
-			<ul class="list-unstyled">
-				<li v-for="todo in todos">
-					<label>
-						<p v-bind:class="{'done': todo.done}">{{todo.text}}</p>
-					</label>
+			<ul class="list-unstyled" id="messageList">
+				<li v-for="msg in messages">
+					<div v-if="msg.isOrg === true">
+						<div v-bind:style="orgStyleObject">
+							<p>{{msg.text}} - {{msg.author}}</p>
+						</div>
+					</div>
+					<div v-else>
+						<div v-bind:style="normalStyleObject">
+							<p>{{msg.text}} - {{msg.author}}</p>
+						</div>
+					</div>
 				</li>
 			</ul>
-			<p>
-				<input type="text" v-model="todoText" placeholder="add new todo here" />
-				<button v-on:click="addTodo()" class="btn btn-primary btn-sm">Submit</button>
-			</p>
+			<div id="userInput">
+				<input type="text" v-model="msgText" placeholder="add new message here" />
+				<button v-on:click="addMessage()" class="btn btn-primary">Submit</button>
+			</div>
+			<br><br>
+			<div id="outsideClick">
+				<button class="btn btn-primary" id="outsideBtn">Outside Text (Like From Other User Through Websocket)</button>
+			</div>
 		</div>
 	</body>
 </html>
