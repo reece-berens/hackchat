@@ -12,6 +12,9 @@
 </body>
 <script>
     var roomName = "{{ room_name|escapejs }}";
+    {% for m in previous_messages %}
+        document.querySelector('#chat-log').value += ('{{ m }}'+ '\n');
+    {% endfor %}
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
@@ -38,7 +41,8 @@
         var messageInputDom = document.querySelector('#chat-message-input');
         var message = messageInputDom.value;
         chatSocket.send(JSON.stringify({
-            'message': message
+            'message': message,
+            'author': 'Reece Berens'
         }));
 
         messageInputDom.value = '';

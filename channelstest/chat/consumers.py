@@ -1,8 +1,10 @@
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 import json
 from asgiref.sync import async_to_sync
+from channels.db import database_sync_to_async
+from .models import Message
 
-"""
+
 #SYNCHRONOUS VERSION
 class ChatConsumer(WebsocketConsumer):
 	def connect(self):
@@ -25,13 +27,21 @@ class ChatConsumer(WebsocketConsumer):
 	def receive(self, text_data):
 		textDataJson = json.loads(text_data)
 		message = textDataJson['message']
+		author = textDataJson['author']
+		print("In receive")
+		#We need to store the message in the database here since this is where it comes in from the websocket
+		dbMsg = Message()
+		dbMsg.author = author
+		dbMsg.message_text = message
+		dbMsg.save()
 
 		#Send message to room group
 		async_to_sync(self.channel_layer.group_send)(
 			self.room_group_name,
 			{
 				'type': 'chat_message',
-				'message': message
+				'message': message,
+				'author': author
 			}
 		)
 		
@@ -43,12 +53,15 @@ class ChatConsumer(WebsocketConsumer):
 	#Receive message from room group
 	def chat_message(self, event):
 		message = event['message']
+		author = event['author']
+		print("In chat_message")
 		#Send message to WebSocket
 		self.send(text_data=json.dumps({
-			'message': message
+			'message': message,
+			'author': author
 		}))
-"""
 
+"""
 class ChatConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['roomName']
@@ -87,3 +100,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({
 			'message': message
 		}))
+"""

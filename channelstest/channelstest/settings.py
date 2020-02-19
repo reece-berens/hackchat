@@ -131,3 +131,5 @@ CHANNEL_LAYERS = {
         }
     }
 }
+
+PREV_MSGS_TO_DISPLAY_ON_LOAD = 3
