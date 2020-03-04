@@ -62,7 +62,10 @@ ROOT_URLCONF = 'channelstest.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            'mlhAuth/templates',
+            'chat/templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,17 +152,17 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = "mlhAuth.MLHUser"
 # oauth configuration
-SITE_ID = 1
+SITE_ID = 2
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_ADAPTER = 'authentication.adapter.AccountAdapter'
+ACCOUNT_ADAPTER = 'mlhAuth.adapter.AccountAdapter'
 # SOCIALACCOUNT_ADAPTER='authentication.accountAdapter.CustomSocialAccountAdapter'
 LOGIN_REDIRECT_URL = 'index'
 # note that if testing on local host, must do:
 #   https://stackoverflow.com/questions/7610394/how-to-setup-ssl-on-a-local-django-server-to-test-a-facebook-app
 #   https://django-extensions.readthedocs.io/en/latest/runserver_plus.html
 #  or https://stackoverflow.com/questions/8023126/how-can-i-test-https-connections-with-django-as-easily-as-i-can-non-https-connec
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = os.getenv("OAUTH_HTTPS")
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http' #os.getenv("OAUTH_HTTPS")
 SECURE_SSL_REDIRECT = True if ACCOUNT_DEFAULT_HTTP_PROTOCOL == 'https' else False

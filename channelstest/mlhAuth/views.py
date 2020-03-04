@@ -28,6 +28,7 @@ class MLHOAuth2Adapter(OAuth2Adapter):
     many_profiles_url = '{0}/users'.format(api_url)
 
     def complete_login(self, request, app, token, **kwargs):
+        print('complete login')
         params = {'access_token': token.token}
         resp = requests.get(self.profile_url, params=params)
         extra_data = resp.json()
@@ -39,6 +40,7 @@ class MLHOAuth2Adapter(OAuth2Adapter):
         raise Exception("Login Error")
 
     def get_profile(self, token):
+        print('get prof')
         params = {'access_token': token.token}
         resp = requests.get(self.profile_url, params=params)
         profile = resp.json()
@@ -50,7 +52,8 @@ class MLHOAuth2Adapter(OAuth2Adapter):
 @receiver(user_signed_up)
 def retrieve_social_data(request, user, **kwargs):
     """Signal, that gets extra data from sociallogin and put it to profile."""
-
+    
+    print('retrive social')
     # in this signal I can retrieve the obj from SocialAccount
     data = SocialAccount.objects.filter(user=user, provider='mlh')
     user.username = user.email

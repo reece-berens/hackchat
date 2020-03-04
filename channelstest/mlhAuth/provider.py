@@ -29,6 +29,7 @@ class MLHProvider(OAuth2Provider):
     account_class = MLHAccount
 
     def get_auth_url(self, request, action):
+        print('get auth url')
         if action == AuthAction.REAUTHENTICATE:
             url = 'https://my.mlh.io/oauth/authorize'
         else:
@@ -36,10 +37,12 @@ class MLHProvider(OAuth2Provider):
         return url
 
     def get_default_scope(self):
+        print('get scope')
         scope = ['email', 'phone_number', 'demographics', 'birthday', 'education', 'event']
         return scope
 
     def extract_uid(self, data):
+        print('extract uid')
         return str(data['id'])
 
     def extract_common_fields(self, data):

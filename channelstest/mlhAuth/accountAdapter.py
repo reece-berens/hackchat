@@ -11,6 +11,7 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     confirm form and existing email error
     """
     def pre_social_login(self, request, sociallogin):
+        print('pre-social')
         user = User.objects.filter(email=sociallogin.user.email).first()
         if user and not sociallogin.is_existing:
             sociallogin.connect(request, user)

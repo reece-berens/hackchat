@@ -7,6 +7,7 @@ from mlhAuth.models import MLHUser
 class AccountAdapter(DefaultAccountAdapter):
     def get_login_redirect_url(self, request):
         url = super(AccountAdapter, self).get_login_redirect_url(request)
+        print('hi')
         if 'login/callback' in request.path:
             try:
                 profile = MLHUser.objects.get(user=request.user)
@@ -14,5 +15,5 @@ class AccountAdapter(DefaultAccountAdapter):
                 profile = None
             if profile is None:
                 url = reverse('registration:register')
-
+        print('callback-' + url)
         return url
