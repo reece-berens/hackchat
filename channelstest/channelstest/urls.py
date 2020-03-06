@@ -18,10 +18,11 @@ from django.urls import path
 from django.conf.urls import include
 from allauth.account.views import login
 
-from .views import mainPage
+from .views import mainPage, testCallback
 
 urlpatterns = [
     path('', mainPage),
+    path('callback', testCallback),
     path('admin/', admin.site.urls),
     path('chat/', include('chat.urls')),
     path('accounts/', include('allauth.urls')),
