@@ -64,7 +64,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             'mlhAuth/templates',
-            'chat/templates'
+            'chat/templates',
+            'channelstest/templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -152,7 +153,7 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = "mlhAuth.MLHUser"
 # oauth configuration
-SITE_ID = 2
+SITE_ID = 3
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_USERNAME_REQUIRED = False

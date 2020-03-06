@@ -18,11 +18,15 @@ from django.urls import path
 from django.conf.urls import include
 from allauth.account.views import login
 
+from .views import mainPage
+
 urlpatterns = [
+    path('', mainPage),
     path('admin/', admin.site.urls),
     path('chat/', include('chat.urls')),
     path('accounts/', include('allauth.urls')),
-    path('accounts/social/signup/', login, name="account_signup")
+    path('accounts/social/signup/', login, name="account_signup"),
+    path('accounts/signup', login, name="account_signup"),
 ]
 
 print(urlpatterns)

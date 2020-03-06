@@ -43,6 +43,7 @@ class MLHProvider(OAuth2Provider):
 
     def extract_uid(self, data):
         print('extract uid')
+        print(str(data['id']))
         return str(data['id'])
 
     def extract_common_fields(self, data):

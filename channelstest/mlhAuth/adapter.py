@@ -10,8 +10,11 @@ class AccountAdapter(DefaultAccountAdapter):
         print('hi')
         if 'login/callback' in request.path:
             try:
-                profile = MLHUser.objects.get(user=request.user)
+                print(request)
+                print(request.user)
+                profile = MLHUser.objects.get(email=request.user)
             except MLHUser.DoesNotExist:
+                print("Does not exist")
                 profile = None
             if profile is None:
                 url = reverse('registration:register')

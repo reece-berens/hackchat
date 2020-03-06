@@ -32,8 +32,10 @@ class MLHOAuth2Adapter(OAuth2Adapter):
         params = {'access_token': token.token}
         resp = requests.get(self.profile_url, params=params)
         extra_data = resp.json()
+        print(extra_data)
         if extra_data['status'] == 'OK':
             extra_data = extra_data['data']
+            print("Before return in complete_login")
             return self.get_provider().sociallogin_from_response(
                 request, extra_data
             )
