@@ -64,7 +64,9 @@ ROOT_URLCONF = 'hackchat.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, "hackchat/templates"),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,6 +134,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.getenv('STATIC_ROOT')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "hackchat/static"),
+]
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -156,3 +162,5 @@ LOGIN_REDIRECT_URL = 'index'
 #  or https://stackoverflow.com/questions/8023126/how-can-i-test-https-connections-with-django-as-easily-as-i-can-non-https-connec
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = os.getenv("OAUTH_HTTPS")
 SECURE_SSL_REDIRECT = True if ACCOUNT_DEFAULT_HTTP_PROTOCOL == 'https' else False
+
+DEFAULT_CONTEXT = json.loads(os.getenv('DEFAULT_CONTEXT'))
