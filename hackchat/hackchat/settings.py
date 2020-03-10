@@ -66,6 +66,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, "hackchat/templates"),
+            os.path.join(BASE_DIR, "mlhAuth/templates")
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -148,7 +149,7 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = "mlhAuth.MLHUser"
 # oauth configuration
-SITE_ID = 3
+SITE_ID = os.getenv("OAUTH_SITE_ID")
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_USERNAME_REQUIRED = False

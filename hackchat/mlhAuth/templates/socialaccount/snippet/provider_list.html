@@ -3,20 +3,10 @@
 {% load socialaccount %}
 
 {% get_providers as socialaccount_providers %}
-<h1 class="h3 mb-3 font-weight-normal">Click below to sign in using</h1>
+<h1 class="h3 mb-3 font-weight-normal">Click below to sign in using MLH</h1>
 
 {% for provider in socialaccount_providers %}
-    {% if provider.id == "openid" %}
-        {% for brand in provider.get_brands %}
-            <a title="{{ brand.name }}"
-               class="socialaccount_provider {{ provider.id }} {{ brand.id }}"
-               href="{% provider_login_url provider.id openid=brand.openid_url process=process %}"
-            ><img src="{% static 'img/icons/mlh-logo-white.svg' %}" width="100" height="100"></a>
-        {% endfor %}
-    {% endif %}
-
     <a title="{{ provider.name }}" class="socialaccount_provider {{ provider.id }}"
        href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"><img
-            src="{% static 'img/icons/mlh-logo-white.svg' %}" width="100" height="100"></a>
-
+            src="{% static 'img/mlh-logo-white.svg' %}" width="100" height="100"></a>
 {% endfor %}

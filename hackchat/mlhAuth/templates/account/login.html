@@ -1,27 +1,16 @@
 {# this template overrides the default django allauth template#}
-{% extends 'base.html' %}
-
 {% load i18n %}
 {% load static %}
 {% load account socialaccount %}
-
 
 {% block header_block %}
     {% include 'account/login_header.html' %}
 {% endblock %}
 
-
 {% block content %}
-
-
     {% get_providers as socialaccount_providers %}
 
     <div class="signin">
-
-        {#  <ul class="socialaccount_providers">#}
         {% include "socialaccount/snippet/provider_list.html" with process="login" %}
-        {#  </ul>#}
-
     </div>
-
 {% endblock %}
