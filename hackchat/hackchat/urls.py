@@ -22,6 +22,7 @@ import hackchat.views as views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
-    path('account/', include('allauth.urls')),
+    path('accounts/', include('allauth.urls')),
     path('accounts/signup', login, name="account_signup"),
+    path('callback', views.callback)
 ]

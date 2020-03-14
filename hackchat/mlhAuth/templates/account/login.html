@@ -10,7 +10,7 @@
 {% block content %}
     {% get_providers as socialaccount_providers %}
 
-    <div class="signin">
+    <div class="signin" style="text-align: center">
         {% include "socialaccount/snippet/provider_list.html" with process="login" %}
     </div>
 {% endblock %}

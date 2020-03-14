@@ -7,5 +7,9 @@ def index(request):
 	context = settings.DEFAULT_CONTEXT
 	return render(request, 'index.html', context)
 
+def callback(request):
+	context = settings.DEFAULT_CONTEXT
+	return render(request, 'callback.html', context)
+
 
 
