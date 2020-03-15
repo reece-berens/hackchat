@@ -7,6 +7,9 @@ class Channel(models.Model):
 	channelName = models.CharField(max_length=128, default='general')
 	organizerOnly = models.BooleanField(default=False)
 
+	def __str__(self):
+		return self.channelName
+
 class ChannelPermissions(models.Model):
 	channelID = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='channel_id_for_permission')
 	participantID = models.ForeignKey(MLHUser, on_delete=models.CASCADE, related_name='participant_id_for_permission')

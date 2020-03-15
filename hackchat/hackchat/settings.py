@@ -68,7 +68,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, "hackchat/templates"),
-            os.path.join(BASE_DIR, "mlhAuth/templates")
+            os.path.join(BASE_DIR, "mlhAuth/templates"),
+            os.path.join(BASE_DIR, "chat/templates"),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -167,3 +168,5 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = os.getenv("OAUTH_HTTPS")
 SECURE_SSL_REDIRECT = True if ACCOUNT_DEFAULT_HTTP_PROTOCOL == 'https' else False
 
 DEFAULT_CONTEXT = json.loads(os.getenv('DEFAULT_CONTEXT'))
+
+PREV_CHAT_MSGS_TO_LOAD = os.getenv('PREV_CHAT_MSGS_TO_LOAD')

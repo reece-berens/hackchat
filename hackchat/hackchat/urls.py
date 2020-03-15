@@ -24,5 +24,6 @@ urlpatterns = [
     path('', views.index),
     path('accounts/', include('allauth.urls')),
     path('accounts/signup', login, name="account_signup"),
-    path('callback', views.callback)
+    path('callback', views.callback),
+    path('chat/', include('chat.urls'))
 ]
