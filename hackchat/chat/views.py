@@ -21,12 +21,12 @@ def room(request, roomName):
 		#The user is not logged in, so we want to send them back to the login page
 		return redirect('../accounts/login/')
 
-	lastMessages = Message.objects.order_by('-created_timestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
+	lastMessages = [] #Message.objects.order_by('-created_timestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
 	msgsForSend = []
 	for i in lastMessages:
 		msgsForSend.append(i.message_text)
 	print(type(msgsForSend))
-	return render(request,'chat/room.html', {
+	return render(request,'room.html', {
 		'room_name': roomName,
 		'previous_messages': msgsForSend
 	})

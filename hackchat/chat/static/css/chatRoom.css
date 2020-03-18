@@ -1,0 +1,14 @@
+.column {
+	float: left;
+	padding: 10px;
+}
+
+.participantColumn, .channelColumn {
+	width: 20%;
+	background-color: grey;
+}
+
+.chatColumn {
+	width: 60%;
+	background-color: lightgray;
+}

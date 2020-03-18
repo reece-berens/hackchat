@@ -6,7 +6,25 @@
     {% block header_block %}
         {% include 'head.html' %}
     {% endblock %}
+
+    <link rel="stylesheet" href="{% static '/css/chatRoom.css' %}">
 </head>
 
+<body>
+    <div class="column channelColumn">
+        <h2>Channels</h2>
+        <p>List of channels...</p>
+    </div>
+
+    <div class="column chatColumn">
+        <h2>Chat</h2>
+        <p>Chat stuff...</p>
+    </div>
+
+    <div class="column participantColumn">
+        <h2>Participants</h2>
+        <p>Participants...</p>
+    </div>
+</body>
 
 </html>
