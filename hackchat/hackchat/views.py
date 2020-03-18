@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 
 def index(request):
@@ -11,7 +11,5 @@ def index(request):
 def callback(request):
 	context = settings.DEFAULT_CONTEXT
 	print(request.user) #This shows the e-mail address of the user that is currently logged in
-	return render(request, 'callback.html', context)
-
-
-
+	return redirect('../chat/general')
+	#return render(request, 'callback.html', context)

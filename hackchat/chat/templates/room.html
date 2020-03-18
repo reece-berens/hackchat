@@ -13,7 +13,11 @@
 <body>
     <div class="column channelColumn">
         <h2>Channels</h2>
-        <p>List of channels...</p>
+        <ul>
+            {% for i in channelList %}
+                <li>{{ i.channelName }}</li>
+            {% endfor %}
+        </ul>
     </div>
 
     <div class="column chatColumn">
@@ -22,8 +26,19 @@
     </div>
 
     <div class="column participantColumn">
+        <h2>Organizers</h2>
+        <ul>
+            {% for i in organizerList %}
+                <li>{{ i.first_name }} {{ i.last_name }}</li>
+            {% endfor %}
+        </ul>
+
         <h2>Participants</h2>
-        <p>Participants...</p>
+        <ul>
+            {% for i in userList %}
+                <li>{{ i.first_name }} {{ i.last_name }}</li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 
