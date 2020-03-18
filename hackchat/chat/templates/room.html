@@ -11,6 +11,11 @@
 </head>
 
 <body>
+    <form class="form-inline" method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <button class="btn btn-link nav-link" type="submit">Logout</button>
+    </form>
+
     <div class="column channelColumn">
         <h2>Channels</h2>
         <ul>
