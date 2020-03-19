@@ -9,20 +9,20 @@ from chat.models import Channel, ChannelPermissions
 class AccountAdapter(DefaultAccountAdapter):
     def get_login_redirect_url(self, request):
         url = '/callback'
-        print('hi')
+        print('inside get_login_redirect_url in AccountAdapter')
         print(request.path)
         if 'login/callback' in request.path:
             print(request)
-            print(request.user)
+            #print(request.user)
             profile = MLHUser.objects.get(email=request.user)
-            print(profile)
+            #print(profile)
             allChannels = Channel.objects.all()
-            print(type(allChannels))
+            #print(type(allChannels))
             for i in allChannels:
                 try:
                     cpObject = ChannelPermissions.objects.filter(channelID=i.id).filter(participantID=profile.id)
-                    print("Type of cpObject is {}".format(type(cpObject)))
-                    print(cpObject)
+                    #print("Type of cpObject is {}".format(type(cpObject)))
+                    #print(cpObject)
                     if not cpObject:
                         #We need to create a ChannelPermission object
                         print("Empty query set")

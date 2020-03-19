@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from .models import Message, Channel
 from mlhAuth.models import MLHUser
+import json
 
 # Create your views here.
 def index(request):
@@ -35,6 +36,26 @@ def room(request, roomName):
 		return index(request)
 
 	lastMessages = [] #Message.objects.order_by('-created_timestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
+	"""
+	msgsForSend = [
+		{
+			'firstName': 'Reece',
+			'lastName': 'Berens',
+			'contents': 'This is a test of the emergency broadcast system to see what the box will do with a whole heck of a lot of text',
+			'email': 'rberens123@yahoo.com',
+			'time': '10:00',
+			'fromOrg': True,
+		},
+		{
+			'firstName': 'Reece',
+			'lastName': 'Berens',
+			'contents': 'This is another long piece of text to see what the box for the current user will do when there is a lot of text in the box',
+			'email': 'rberens@ksu.edu',
+			'time': '10:05',
+			'fromOrg': False,
+		}
+	]
+	"""
 	msgsForSend = []
 	for i in lastMessages:
 		msgsForSend.append(i.message_text)
@@ -45,6 +66,7 @@ def room(request, roomName):
 	userLists = getUserLists()
 	context['userList'] = userLists[1]
 	context['organizerList'] = userLists[0]
+	context['self_email'] = email
 	return render(request,'room.html', context)
 
 #This will get the lists of all organizers and normal users for the participant column

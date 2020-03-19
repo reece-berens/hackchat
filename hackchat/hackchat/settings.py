@@ -30,8 +30,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = json.loads(os.getenv("ALLOWED_HOSTS"))
-print(ALLOWED_HOSTS)
-print(type(ALLOWED_HOSTS))
+#print(ALLOWED_HOSTS)
+#print(type(ALLOWED_HOSTS))
 
 
 # Application definition

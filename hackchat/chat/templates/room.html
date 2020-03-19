@@ -6,8 +6,13 @@
     {% block header_block %}
         {% include 'head.html' %}
     {% endblock %}
-
     <link rel="stylesheet" href="{% static '/css/chatRoom.css' %}">
+    {{ previous_messages|json_script:'initMsgJSON' }}
+    <script type="text/javascript">
+        var initialMessages = JSON.parse(document.getElementById('initMsgJSON').text);
+        var myEmail = '{{ self_email }}';
+    </script>
+    <script src="{% static '/js/chatRoom.js' %}" defer='defer'></script>
 </head>
 
 <body>
@@ -26,8 +31,37 @@
     </div>
 
     <div class="column chatColumn">
-        <h2>Chat</h2>
-        <p>Chat stuff...</p>
+        <div id="chatWindow" v-bind:style="chatWindowStyleObject">
+            <div v-for="msg in messages" id="forMsg">
+                <div v-if="msg.email === selfEmail" id="v-ifEmail">
+                    <div v-bind:style="[baseStyleObject, selfStyleObject, normalStyleObject]" class="doAfter">
+                        <p>[[ msg.firstName ]] [[ msg.lastName ]]</p>
+                        <p>[[ msg.contents ]]</p>
+                        <p class="time-self">[[ msg.time ]]</p>
+                    </div>
+                </div>
+                <div v-else id="v-elseNotEmail">
+                    <div v-if="msg.fromOrg === true" id="v-ifFromOrg">
+                        <div v-bind:style="[baseStyleObject, organizerStyleObject]" id="isOrgMsgCont" class="doAfter">
+                            <p>[[ msg.firstName ]] [[ msg.lastName ]]</p>
+                            <p>[[ msg.contents ]]</p>
+                            <p class="time-other">[[ msg.time ]]</p>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div v-bind:style="[baseStyleObject, normalStyleObject]" id="isNormMsgCont" class="doAfter">
+                            <h6>[[ msg.firstName ]] [[ msg.lastName ]]</h6>
+                            <p>[[ msg.contents ]]</p>
+                            <p class="time-other">[[ msg.time ]]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="chatTypeWindow" v-bind:style="divStyleObject">
+            <h3>Typing box here</h3>
+        </div>
     </div>
 
     <div class="column participantColumn">

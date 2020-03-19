@@ -6,10 +6,52 @@
 
 .participantColumn, .channelColumn {
 	width: 20%;
-	background-color: grey;
+	background-color: #3a3a3a;
 }
 
 .chatColumn {
 	width: 60%;
-	background-color: lightgray;
+	background-color: #444444;
 }
+
+/* https://www.w3schools.com/howto/howto_css_chat.asp */
+/* Chat containers */
+.msgContainer {
+	border: 2px solid #dedede;
+	background-color: #4e4e4e;
+	border-radius: 5px;
+	padding-top: 5px;
+	margin: 5px auto;
+	width: 95%;
+	line-height: .6;
+  }
+  
+  /* Darker chat container for self */
+  .self {
+	background-color: #575757;
+  }
+
+  .self p {
+	float: right;
+  }
+  
+  /* Clear floats */
+  .doAfter::after {
+	content: "";
+	clear: both;
+	display: table;
+  }
+  
+  /* Style time text */
+  .time-self {
+	float: right;
+	color: #fff;
+	font-size: 10pt;
+  }
+  
+  /* Style time text */
+  .time-other {
+	float: left;
+	color: #fff;
+	font-size: 10pt;
+  }
