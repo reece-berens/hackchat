@@ -36,12 +36,12 @@ def room(request, roomName):
 		return index(request)
 
 	lastMessages = [] #Message.objects.order_by('-created_timestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
-	"""
+	
 	msgsForSend = [
 		{
-			'firstName': 'Reece',
-			'lastName': 'Berens',
-			'contents': 'This is a test of the emergency broadcast system to see what the box will do with a whole heck of a lot of text',
+			'firstName': 'Organizer',
+			'lastName': 'User',
+			'contents': 'This is a test of the emergency broadcast system to see what the box will do with a whole heck of a lot of text dang we need even more text when we dont have the console window open my goodness',
 			'email': 'rberens123@yahoo.com',
 			'time': '10:00',
 			'fromOrg': True,
@@ -49,14 +49,14 @@ def room(request, roomName):
 		{
 			'firstName': 'Reece',
 			'lastName': 'Berens',
-			'contents': 'This is another long piece of text to see what the box for the current user will do when there is a lot of text in the box',
+			'contents': 'This is another long piece of text to see what the box for the current user will do when there is a lot of text in the box lorem ipsum stuff to make the text longer and see what the box does',
 			'email': 'rberens@ksu.edu',
 			'time': '10:05',
 			'fromOrg': False,
 		}
 	]
-	"""
-	msgsForSend = []
+	
+	#msgsForSend = []
 	for i in lastMessages:
 		msgsForSend.append(i.message_text)
 	print(type(msgsForSend))

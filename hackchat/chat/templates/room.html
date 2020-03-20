@@ -37,7 +37,7 @@
                     <div v-bind:style="[baseStyleObject, selfStyleObject, normalStyleObject]" class="doAfter">
                         <p>[[ msg.firstName ]] [[ msg.lastName ]]</p>
                         <p>[[ msg.contents ]]</p>
-                        <p class="time-self">[[ msg.time ]]</p>
+                        <p v-bind:style="selfTimeStyleObject">[[ msg.time ]]</p>
                     </div>
                 </div>
                 <div v-else id="v-elseNotEmail">
@@ -45,14 +45,14 @@
                         <div v-bind:style="[baseStyleObject, organizerStyleObject]" id="isOrgMsgCont" class="doAfter">
                             <p>[[ msg.firstName ]] [[ msg.lastName ]]</p>
                             <p>[[ msg.contents ]]</p>
-                            <p class="time-other">[[ msg.time ]]</p>
+                            <p v-bind:style="normalTimeStyleObject">[[ msg.time ]]</p>
                         </div>
                     </div>
                     <div v-else>
                         <div v-bind:style="[baseStyleObject, normalStyleObject]" id="isNormMsgCont" class="doAfter">
                             <h6>[[ msg.firstName ]] [[ msg.lastName ]]</h6>
                             <p>[[ msg.contents ]]</p>
-                            <p class="time-other">[[ msg.time ]]</p>
+                            <p v-bind:style="normalTimeStyleObject">[[ msg.time ]]</p>
                         </div>
                     </div>
                 </div>

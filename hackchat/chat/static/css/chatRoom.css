@@ -24,34 +24,11 @@
 	margin: 5px auto;
 	width: 95%;
 	line-height: .6;
-  }
-  
-  /* Darker chat container for self */
-  .self {
-	background-color: #575757;
-  }
+}
 
-  .self p {
-	float: right;
-  }
-  
-  /* Clear floats */
-  .doAfter::after {
+/* Clear floats */
+.doAfter::after {
 	content: "";
 	clear: both;
 	display: table;
-  }
-  
-  /* Style time text */
-  .time-self {
-	float: right;
-	color: #fff;
-	font-size: 10pt;
-  }
-  
-  /* Style time text */
-  .time-other {
-	float: left;
-	color: #fff;
-	font-size: 10pt;
-  }
+}

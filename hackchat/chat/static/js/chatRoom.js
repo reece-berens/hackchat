@@ -16,7 +16,17 @@ var chatVue = new Vue({
 		},
 		selfStyleObject: {
 			backgroundColor: '#575757',
+			//textAlign: 'right',
+		},
+		selfTimeStyleObject: {
 			textAlign: 'right',
+			color: '#fff',
+			fontSize: '10pt',
+		},
+		normalTimeStyleObject: {
+			textAlign: 'left',
+			color: '#fff',
+			fontSize: '10pt',
 		},
 		baseStyleObject: {
 			border: '2px',
