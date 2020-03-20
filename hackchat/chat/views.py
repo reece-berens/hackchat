@@ -27,7 +27,7 @@ def room(request, roomName):
 	print(loggedInUser)
 	print(type(loggedInUser))
 	print(loggedInUser.isOrganizer)
-	context['selfIsOrganizer'] = loggedInUser.isOrganizer
+	context['selfIsOrganizer'] = json.dumps(loggedInUser.isOrganizer)
 
 	#We want to make sure the channel exists in the database
 	#If not, just go back to the chat landing page that will have all available channels on it

@@ -8,9 +8,20 @@
     {% endblock %}
     <link rel="stylesheet" href="{% static '/css/chatRoom.css' %}">
     {{ previous_messages|json_script:'initMsgJSON' }}
+    {{ selfIsOrganizer|json_script:'selfIsOrganizerJSON' }}
     <script type="text/javascript">
         var initialMessages = JSON.parse(document.getElementById('initMsgJSON').text);
         var myEmail = '{{ self_email }}';
+        var roomName = '{{ room_name }}';
+        var selfIsOrganizer = 0;
+        if (JSON.parse(document.getElementById('selfIsOrganizerJSON').text) == "true")
+        {
+            selfIsOrganizer = true;
+        }
+        else
+        {
+            selfIsOrganizer = false;
+        }
     </script>
     <script src="{% static '/js/chatRoom.js' %}" defer='defer'></script>
 </head>
@@ -60,7 +71,8 @@
         </div>
 
         <div id="chatTypeWindow" v-bind:style="divStyleObject">
-            <h3>Typing box here</h3>
+            <input id="chatMessageInput" type="text" size="100"/>
+            <input id="chatMessageSend" type="button" value="Send"/>
         </div>
     </div>
 

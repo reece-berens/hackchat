@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'channels',
     'chat',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -142,6 +143,17 @@ STATIC_ROOT = os.getenv('STATIC_ROOT')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "hackchat/static"),
 ]
+
+#For channels setup
+ASGI_APPLICATION = 'hackchat.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        }
+    }
+}
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`

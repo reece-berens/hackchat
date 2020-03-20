@@ -65,3 +65,59 @@ var messageTypeVue = new Vue({
 		}
 	}
 });
+
+var chatSocket = new WebSocket('ws://' + window.location.host + 
+	'/ws/chat/' + roomName + '/');
+
+chatSocket.onmessage = function(e) {
+	console.log("GOT MESSAGE FROM SERVER");
+	var messageData = JSON.parse(e.data);
+	/*
+		messageData object has the following attributes:
+			messageType
+			firstName
+			lastName
+			contents
+			email
+			time
+			fromOrg
+	*/
+	//TODO add some error checking here to ensure that the incoming
+	//message data has all of the attributes it should
+	console.log(messageData['messageType']);
+	if (messageData['messageType'] == 'chatMessage')
+	{
+		chatVue.messages.push(messageData);
+	}
+};
+
+chatSocket.onclose = function(e) {
+	console.error('Chat socket has closed unexpectedly');
+};
+
+$('#chatMessageInput').keyup(function(e) {
+	if (e.which == 13)
+	{
+		//Enter key has been pressed, send the message
+		sendMessage();
+		$('#chatMessageInput')[0].value = '';
+	}
+});
+
+$('#chatMessageSend').click(function(e) {
+	sendMessage();
+	$('#chatMessageInput')[0].value = '';
+});
+
+function sendMessage() {
+	var messageText = $("#chatMessageInput")[0].value;
+	console.log(messageText);
+	var toSendDict = {};
+	toSendDict['message'] = messageText;
+	toSendDict['authorEmail'] = myEmail;
+	toSendDict['roomName'] = roomName;
+	console.log(toSendDict);
+
+	chatSocket.send(JSON.stringify(toSendDict));
+}
+
