@@ -4,7 +4,8 @@ from django.urls import reverse
 
 from .models import Message, Channel
 from mlhAuth.models import MLHUser
-import json
+import json, pytz
+from django.utils import timezone
 
 # Create your views here.
 def index(request):
@@ -35,8 +36,9 @@ def room(request, roomName):
 	if (roomsInDB == 0):
 		return index(request)
 
-	lastMessages = [] #Message.objects.order_by('-created_timestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
-	
+	lastMessages = Message.objects.filter(channelID=Channel.objects.get(channelName=roomName)).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
+
+	"""
 	msgsForSend = [
 		{
 			'firstName': 'Organizer',
@@ -55,10 +57,17 @@ def room(request, roomName):
 			'fromOrg': False,
 		}
 	]
-	
-	#msgsForSend = []
+	"""
+	msgsForSend = []
 	for i in lastMessages:
-		msgsForSend.append(i.message_text)
+		msgsForSend.append({
+			'firstName': i.author.first_name,
+			'lastName': i.author.last_name,
+			'email': i.author.email,
+			'contents': i.messageText,
+			'time': timezone.localtime(i.messageTimestamp, pytz.timezone('America/Chicago')).strftime("%a %I:%M %p"),
+			'fromOrg': i.author.isOrganizer
+		})
 	print(type(msgsForSend))
 	context['room_name'] = roomName
 	context['previous_messages'] = msgsForSend

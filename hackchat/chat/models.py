@@ -22,6 +22,8 @@ class ChannelPermissions(models.Model):
 			3 - can read and write messages, no limit on mentions and has access to mentioning everyone and can remove messages from being viewed
 			Permission 3 is reserved for organizers only
 	"""
+	def __str__(self):
+		return "User {} and Channel {} - {}".format(self.participantID, self.channelID, self.permissionStatus)
 
 class Message(models.Model):
 	channelID = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='channel_id_for_message')

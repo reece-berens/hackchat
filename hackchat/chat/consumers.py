@@ -1,9 +1,10 @@
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
-import json
+import json, pytz
 from asgiref.sync import async_to_sync
 #from channels.db import database_sync_to_async
 from .models import Message, Channel, ChannelPermissions
 from mlhAuth.models import MLHUser
+from django.utils import timezone
 
 
 #SYNCHRONOUS VERSION
@@ -32,22 +33,42 @@ class ChatConsumer(WebsocketConsumer):
 		roomName = textDataJson['roomName']
 		print("In receive")
 		#We need to store the message in the database here since this is where it comes in from the websocket
+		authorObject = MLHUser.objects.filter(email=author)[0]
+		channelObject = Channel.objects.filter(channelName=roomName)[0]
 		dbMsg = Message()
-		dbMsg.author = MLHUser.objects.filter(email=author)[0]
+		dbMsg.author = authorObject
 		dbMsg.messageText = message
-		dbMsg.channelID = Channel.objects.filter(channelName=roomName)[0]
+		dbMsg.channelID = channelObject
+
+		#Check to make sure the user has permission to send message in group
+		cPerm = ChannelPermissions.objects.filter(channelID=channelObject).filter(participantID=authorObject)[0]
+		print(cPerm)
+		if (cPerm.permissionStatus < 2):
+			#The user does not have permission to send a message, so get out of the method
+			return
+
 		print(type(Channel.objects.filter(channelName=roomName)[0]))
 		print(Channel.objects.filter(channelName=roomName)[0].channelName)
 		print(MLHUser.objects.filter(email=author)[0])
-		#dbMsg.save()
+		dbMsg.save()
+
+		tempDateTime = dbMsg.messageTimestamp
+		localDT = timezone.localtime(dbMsg.messageTimestamp, pytz.timezone('America/Chicago'))
+		print(localDT)
+		print(type(localDT))
 
 		#Send message to room group
 		async_to_sync(self.channel_layer.group_send)(
 			self.room_group_name,
 			{
 				'type': 'chat_message',
-				'message': message,
-				'author': author
+				'messageType': 'chatMessage',
+				'contents': message,
+				'email': author,
+				'firstName': authorObject.first_name,
+				'lastName': authorObject.last_name,
+				'time': localDT.strftime("%a %I:%M %p"),
+				'fromOrg': authorObject.isOrganizer
 			}
 		)
 		
@@ -58,11 +79,14 @@ class ChatConsumer(WebsocketConsumer):
 
 	#Receive message from room group
 	def chat_message(self, event):
-		message = event['message']
-		author = event['author']
 		print("In chat_message")
 		#Send message to WebSocket
 		self.send(text_data=json.dumps({
-			'message': message,
-			'author': author
+			'messageType': 'chatMessage',
+			'contents': event['contents'],
+			'email': event['email'],
+			'firstName': event['firstName'],
+			'lastName': event['lastName'],
+			'time': event['time'],
+			'fromOrg': event['fromOrg']
 		}))

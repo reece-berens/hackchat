@@ -85,6 +85,7 @@ chatSocket.onmessage = function(e) {
 	//TODO add some error checking here to ensure that the incoming
 	//message data has all of the attributes it should
 	console.log(messageData['messageType']);
+	console.log(messageData);
 	if (messageData['messageType'] == 'chatMessage')
 	{
 		chatVue.messages.push(messageData);
