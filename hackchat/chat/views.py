@@ -34,7 +34,7 @@ def room(request, roomName):
 	#If not, just go back to the chat landing page that will have all available channels on it
 	roomsInDB = Channel.objects.filter(channelName = roomName).count()
 	if (roomsInDB == 0):
-		return index(request)
+		return redirect('../')
 
 	lastMessages = Message.objects.filter(channelID=Channel.objects.get(channelName=roomName)).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
 
