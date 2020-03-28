@@ -46,8 +46,8 @@ var chatVue = new Vue({
 		}
 	},
 	methods: {
-		addMessage: function() {
-			console.log("Add a message here");
+		addMessage: function(e) {
+			this.messages.push(e);
 		}
 	}
 });
@@ -66,6 +66,44 @@ var messageTypeVue = new Vue({
 	}
 });
 
+var channelVue = new Vue({
+	delimiters: vueDelimiters,
+	el: '#channelColumn',
+	data: {
+		channelList: initialChannelList,
+		selfIsOrganizer: selfIsOrganizer,
+	},
+	methods: {
+		addChannel: function(e) {
+			this.channelList.push(e);
+		},
+		redirect: function(name) {
+			//console.log("INSIDE REDIRECT VUE " + name);
+			window.location.replace('http://' + window.location.host + '/chat/' + name);
+		}
+	},
+	computed: {
+		//https://forum.vuejs.org/t/how-to-best-work-with-v-for-and-computed-lists/49994
+		showOnlyNonOrganizerChannels: function() {
+			//console.log("Inside only non");
+			return this.channelList.filter(c => {
+				//console.log(c);
+				if (c.organizerOnly == false)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			})
+		},
+		showAllChannels: function() {
+			return this.channelList;
+		}
+	}
+});
+
 var chatSocket = new WebSocket('ws://' + window.location.host + 
 	'/ws/chat/' + roomName + '/');
 
@@ -74,13 +112,21 @@ chatSocket.onmessage = function(e) {
 	var messageData = JSON.parse(e.data);
 	/*
 		messageData object has the following attributes:
-			messageType
-			firstName
-			lastName
-			contents
-			email
-			time
-			fromOrg
+			messageType - all have this
+			messageType == 'chatMessage'
+				firstName
+				lastName
+				contents
+				email
+				time
+				fromOrg
+			messageType == 'newChannel'
+				channelName
+				organizerOnly
+			messageType == 'newParticipant'
+				firstName
+				lastName
+				isOrganizer
 	*/
 	//TODO add some error checking here to ensure that the incoming
 	//message data has all of the attributes it should
@@ -88,7 +134,7 @@ chatSocket.onmessage = function(e) {
 	console.log(messageData);
 	if (messageData['messageType'] == 'chatMessage')
 	{
-		chatVue.messages.push(messageData);
+		chatVue.addMessage(messageData);
 	}
 };
 
@@ -121,4 +167,3 @@ function sendMessage() {
 
 	chatSocket.send(JSON.stringify(toSendDict));
 }
-

@@ -9,8 +9,10 @@
     <link rel="stylesheet" href="{% static '/css/chatRoom.css' %}">
     {{ previous_messages|json_script:'initMsgJSON' }}
     {{ selfIsOrganizer|json_script:'selfIsOrganizerJSON' }}
+    {{ channelList|json_script:'channelListJSON' }}
     <script type="text/javascript">
         var initialMessages = JSON.parse(document.getElementById('initMsgJSON').text);
+        var initialChannelList = JSON.parse(document.getElementById('channelListJSON').text);
         var myEmail = '{{ self_email }}';
         var roomName = '{{ room_name }}';
         var selfIsOrganizer = 0;
@@ -32,12 +34,17 @@
         <button class="btn btn-link nav-link" type="submit">Logout</button>
     </form>
 
-    <div class="column channelColumn">
+    <div class="column channelColumn" id="channelColumn">
         <h2>Channels</h2>
-        <ul>
-            {% for i in channelList %}
-                <li>{{ i.channelName }}</li>
-            {% endfor %}
+        <ul v-if="selfIsOrganizer == true" id="if">
+            <li v-for="channel in showAllChannels">
+                <a v-on:click="redirect([[ channel.channelName ]])" href="javascript:;">[[ channel.channelName ]]</a>
+            </li>
+        </ul>
+        <ul v-else id="else">
+            <li v-for="channel in showOnlyNonOrganizerChannels">
+                <a v-on:click="redirect([[ channel.channelName ]])" href="javascript:;">[[ channel.channelName ]]</a>
+            </li>
         </ul>
     </div>
 
