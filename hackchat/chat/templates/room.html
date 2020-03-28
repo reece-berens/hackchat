@@ -10,9 +10,11 @@
     {{ previous_messages|json_script:'initMsgJSON' }}
     {{ selfIsOrganizer|json_script:'selfIsOrganizerJSON' }}
     {{ channelList|json_script:'channelListJSON' }}
+    {{ participantList|json_script:'participantListJSON' }}
     <script type="text/javascript">
         var initialMessages = JSON.parse(document.getElementById('initMsgJSON').text);
         var initialChannelList = JSON.parse(document.getElementById('channelListJSON').text);
+        var initialParticipantList = JSON.parse(document.getElementById('participantListJSON').text);
         var myEmail = '{{ self_email }}';
         var roomName = '{{ room_name }}';
         var selfIsOrganizer = 0;
@@ -83,19 +85,19 @@
         </div>
     </div>
 
-    <div class="column participantColumn">
+    <div class="column participantColumn" id="participantColumn">
         <h2>Organizers</h2>
         <ul>
-            {% for i in organizerList %}
-                <li>{{ i.first_name }} {{ i.last_name }}</li>
-            {% endfor %}
+            <li v-for="part in getOrganizerList">
+                [[ part.first_name ]] [[ part.last_name ]]
+            </li>
         </ul>
 
         <h2>Participants</h2>
         <ul>
-            {% for i in userList %}
-                <li>{{ i.first_name }} {{ i.last_name }}</li>
-            {% endfor %}
+            <li v-for="part in getParticipantList">
+                [[ part.first_name ]] [[ part.last_name ]]
+            </li>
         </ul>
     </div>
 </body>

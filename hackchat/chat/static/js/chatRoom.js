@@ -96,13 +96,54 @@ var channelVue = new Vue({
 				{
 					return false;
 				}
-			})
+			});
 		},
 		showAllChannels: function() {
 			return this.channelList;
 		}
 	}
 });
+
+var participantVue = new Vue({
+	delimiters: vueDelimiters,
+	el: "#participantColumn",
+	data: {
+		participantList: initialParticipantList,
+		selfIsOrganizer: selfIsOrganizer,
+	},
+	methods: {
+		addParticipant: function(e) {
+			this.participantList.push(e);
+		}
+	},
+	computed: {
+		getOrganizerList: function() {
+			return this.participantList.filter(p => {
+				//console.log(p);
+				if (p.isOrganizer == true)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			});
+		},
+		getParticipantList: function() {
+			return this.participantList.filter(p => {
+				if (p.isOrganizer == false)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			});
+		}
+	}
+})
 
 var chatSocket = new WebSocket('ws://' + window.location.host + 
 	'/ws/chat/' + roomName + '/');

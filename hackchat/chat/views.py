@@ -72,34 +72,23 @@ def room(request, roomName):
 	context['room_name'] = roomName
 	context['previous_messages'] = msgsForSend
 	context['channelList'] = getChannelList()
-	userLists = getUserLists()
-	context['userList'] = userLists[1]
-	context['organizerList'] = userLists[0]
+	context['participantList'] = getParticipantList()
 	context['self_email'] = email
 	return render(request,'room.html', context)
 
 #This will get the lists of all organizers and normal users for the participant column
 #Organizer list comes first, followed by normal user list
-def getUserLists():
+def getParticipantList():
 	users = MLHUser.objects.order_by('last_name').order_by('first_name')
 	userList = []
-	organizerList = []
 	for i in users:
-		if (i.isOrganizer == False):
-			userList.append({
-				'first_name': i.first_name,
-				'last_name': i.last_name,
-				'email': i.email,
-				'isOrganizer': False,
-				})
-		else:
-			organizerList.append({
-				'first_name': i.first_name,
-				'last_name': i.last_name,
-				'email': i.email,
-				'isOrganizer': True,
-				})
-	return (organizerList, userList)
+		userList.append({
+			'first_name': i.first_name,
+			'last_name': i.last_name,
+			'email': i.email,
+			'isOrganizer': i.isOrganizer,
+			})
+	return userList
 
 #This will get the list of all channels registered to the chat server
 #It will be used for the chat landing page and channel column of the main chat page
