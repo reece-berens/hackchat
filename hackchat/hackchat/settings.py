@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'background_task',
     'channels',
     'chat',
     'django.contrib.admin',

@@ -114,6 +114,9 @@ var participantVue = new Vue({
 	methods: {
 		addParticipant: function(e) {
 			this.participantList.push(e);
+		},
+		findEmailFromID: function(id) {
+			return this.participantList.find(p => p.id == id).email;
 		}
 	},
 	computed: {
@@ -177,6 +180,27 @@ chatSocket.onmessage = function(e) {
 	{
 		chatVue.addMessage(messageData);
 	}
+	else if (messageData['messageType'] == 'userMuted')
+	{
+		if (messageData['email'] == myEmail)
+		{
+			if (int(messageData['muteMinutes']) == -1)
+			{
+				alert("ALERT: You have been muted permanently.");
+			}
+			else
+			{
+				alert("ALERT: You have been muted for " + messageData['muteMinutes'] + " minutes.");
+			}
+		}
+	}
+	else if (messageData['messageType'] == 'userUnmuted')
+	{
+		if (messageData['email'] == myEmail)
+		{
+			alert("ALERT: You have been un-muted.");
+		}
+	}
 };
 
 chatSocket.onclose = function(e) {
@@ -200,11 +224,23 @@ $('#chatMessageSend').click(function(e) {
 function sendMessage() {
 	var messageText = $("#chatMessageInput")[0].value;
 	console.log(messageText);
-	var toSendDict = {};
+	var toSendDict = {'messageType': 'message'};
 	toSendDict['message'] = messageText;
 	toSendDict['authorEmail'] = myEmail;
 	toSendDict['roomName'] = roomName;
 	console.log(toSendDict);
+
+	chatSocket.send(JSON.stringify(toSendDict));
+}
+
+function sendMute(id, muteTime) {
+	//id is id of user to mute, muteTime is number of minutes (-1 = permanent)
+	var toSendDict = {'messageType': 'muteUser'};
+	emailOfMuteUser = participantVue.findEmailFromID(id);
+	console.log("Muting user " + emailOfMuteUser);
+	toSendDict['mutingEmail'] = emailOfMuteUser;
+	toSendDict['muteMinutes'] = muteTime;
+	toSendDict['requestingEmail'] = myEmail;
 
 	chatSocket.send(JSON.stringify(toSendDict));
 }

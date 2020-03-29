@@ -61,6 +61,7 @@ def room(request, roomName):
 	msgsForSend = []
 	for i in lastMessages:
 		msgsForSend.append({
+			'id': i.id,
 			'firstName': i.author.first_name,
 			'lastName': i.author.last_name,
 			'email': i.author.email,
@@ -83,6 +84,7 @@ def getParticipantList():
 	userList = []
 	for i in users:
 		userList.append({
+			'id': i.id,
 			'first_name': i.first_name,
 			'last_name': i.last_name,
 			'email': i.email,
@@ -97,6 +99,7 @@ def getChannelList():
 	channelList = []
 	for i in channels:
 		channelList.append({
+			'id': i.id,
 			'channelName': i.channelName,
 			'organizerOnly': i.organizerOnly
 		})
