@@ -36,7 +36,7 @@ class AccountAdapter(DefaultAccountAdapter):
                             if (i.organizerOnly == True):
                                 newPermission.permissionStatus = 0
                             else:
-                                newPermission.permissionStatus = 2
+                                newPermission.permissionStatus = i.newUserPermissionStatus
                         newPermission.save()
                     else:
                         print("Not empty query set")
@@ -51,7 +51,7 @@ class AccountAdapter(DefaultAccountAdapter):
                             if (i.organizerOnly == True):
                                 newPermission.permissionStatus = 0
                             else:
-                                newPermission.permissionStatus = 2
+                                newPermission.permissionStatus = i.newUserPermissionStatus
                         newPermission.save()
                 except Exception as e:
                     print(e)
