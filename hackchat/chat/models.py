@@ -6,7 +6,7 @@ from mlhAuth.models import MLHUser
 class Channel(models.Model):
 	channelName = models.CharField(max_length=128, default='general')
 	organizerOnly = models.BooleanField(default=False)
-	newUserPermissionStatus = models.IntegerField(default=2)
+	defaultPermissionStatus = models.IntegerField(default=2)
 
 	def __str__(self):
 		return self.channelName

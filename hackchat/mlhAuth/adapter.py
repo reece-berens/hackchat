@@ -21,8 +21,6 @@ class AccountAdapter(DefaultAccountAdapter):
             for i in allChannels:
                 try:
                     cpObject = ChannelPermissions.objects.filter(channelID=i.id).filter(participantID=profile.id)
-                    #print("Type of cpObject is {}".format(type(cpObject)))
-                    #print(cpObject)
                     if not cpObject:
                         #We need to create a ChannelPermission object
                         print("Empty query set")
@@ -36,7 +34,7 @@ class AccountAdapter(DefaultAccountAdapter):
                             if (i.organizerOnly == True):
                                 newPermission.permissionStatus = 0
                             else:
-                                newPermission.permissionStatus = i.newUserPermissionStatus
+                                newPermission.permissionStatus = i.defaultPermissionStatus
                         newPermission.save()
                     else:
                         print("Not empty query set")
@@ -51,9 +49,10 @@ class AccountAdapter(DefaultAccountAdapter):
                             if (i.organizerOnly == True):
                                 newPermission.permissionStatus = 0
                             else:
-                                newPermission.permissionStatus = i.newUserPermissionStatus
+                                newPermission.permissionStatus = i.defaultPermissionStatus
                         newPermission.save()
                 except Exception as e:
+                    print("EXCEPTION IN ADAPTER")
                     print(e)
         print('callback-' + url)
         return url

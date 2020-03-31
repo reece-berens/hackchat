@@ -7,7 +7,9 @@ from mlhAuth.models import MLHUser
 from django.utils import timezone
 from datetime import datetime, timedelta
 from background_task import background
+from django.conf import settings
 
+utc = pytz.UTC
 
 #SYNCHRONOUS VERSION
 class ChatConsumer(WebsocketConsumer):
@@ -35,12 +37,16 @@ class ChatConsumer(WebsocketConsumer):
 			message = textDataJson['message']
 			author = textDataJson['authorEmail']
 			roomName = textDataJson['roomName']
-			print("In receive")
+			#print("In receive")
 			#We need to store the message in the database here since this is where it comes in from the websocket
 			authorObject = MLHUser.objects.filter(email=author)[0]
-			print(authorObject.muteUntilTime)
-			print(type(authorObject.muteUntilTime))
-			#print("muteTime < datetime.now is {}".format(authorObject.muteUntilTime < datetime.now()))
+			tzMuteUntilTime = timezone.localtime(authorObject.muteUntilTime, pytz.timezone(settings.TIME_ZONE))
+			nowDate = timezone.localtime(timezone.now(), pytz.timezone(settings.TIME_ZONE))
+
+			if (nowDate < tzMuteUntilTime):
+				#The user is currently muted, so we should not let them send the message
+				print("The user is currently muted until {}".format(tzMuteUntilTime))
+				return
 			
 			channelObject = Channel.objects.filter(channelName=roomName)[0]
 			dbMsg = Message()
@@ -50,20 +56,19 @@ class ChatConsumer(WebsocketConsumer):
 
 			#Check to make sure the user has permission to send message in group
 			cPerm = ChannelPermissions.objects.filter(channelID=channelObject).filter(participantID=authorObject)[0]
-			print(cPerm)
 			if (cPerm.permissionStatus < 2):
 				#The user does not have permission to send a message, so get out of the method
+				print("The user does not have enough permissions to send a message here")
+				print(cPerm)
 				return
 
-			print(type(Channel.objects.filter(channelName=roomName)[0]))
-			print(Channel.objects.filter(channelName=roomName)[0].channelName)
-			print(MLHUser.objects.filter(email=author)[0])
+			#print(type(Channel.objects.filter(channelName=roomName)[0]))
+			#print(Channel.objects.filter(channelName=roomName)[0].channelName)
+			#print(MLHUser.objects.filter(email=author)[0])
 			dbMsg.save()
 
 			tempDateTime = dbMsg.messageTimestamp
-			localDT = timezone.localtime(dbMsg.messageTimestamp, pytz.timezone('America/Chicago'))
-			print(localDT)
-			print(type(localDT))
+			localDT = timezone.localtime(dbMsg.messageTimestamp, pytz.timezone(settings.TIME_ZONE))
 
 			#Send message to room group
 			async_to_sync(self.channel_layer.group_send)(
@@ -91,14 +96,16 @@ class ChatConsumer(WebsocketConsumer):
 				#permanent mute
 				user.permanentMute = True
 			else:
-				user.muteUntilTime = datetime.now() + timedelta(minutes=muteMinutes)
+				user.muteUntilTime = timezone.localtime(timezone.now() + timedelta(minutes=muteMinutes), pytz.timezone(settings.TIME_ZONE))
 				notify_unmute(self, user.email, schedule=timedelta(minutes=muteMinutes))
 			user.muteInstances += 1
 			user.save()
 			for c in ChannelPermissions.objects.filter(participantID=user):
-				#Set all permissions to 1 (read-only)
-				c.permissionStatus = 1
-				c.save()
+				#Set all permissions to 1 (read-only) for the channels we have access to
+				cChannel = c.channelID
+				if (cChannel.organizerOnly == False and cChannel.defaultPermissionStatus > 0):
+					c.permissionStatus = 1
+					c.save()
 			async_to_sync(self.channel_layer.group_send)(
 				self.room_group_name,
 				{
@@ -143,9 +150,10 @@ class ChatConsumer(WebsocketConsumer):
 @background(schedule=15)
 def notify_unmute(consumerObj, userEmail):
 	for c in ChannelPermissions.objects.filter(participantID=MLHUser.objects.get(email=userEmail)):
-		#Set all permissions to 2 (read and write)
-		c.permissionStatus = 2
-		c.save()
+		#Set all permissions to 2 (read and write) that we have access to
+		if (c.permissionStatus == 1 and c.channelID.defaultPermissionStatus == 2):
+			c.permissionStatus = 2
+			c.save()
 	async_to_sync(consumerObj.channel_layer.group_send)(
 				consumerObj.room_group_name,
 				{
