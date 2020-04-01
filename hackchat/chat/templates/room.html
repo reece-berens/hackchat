@@ -89,16 +89,43 @@
         <h2>Organizers</h2>
         <ul>
             <li v-for="part in getOrganizerList">
-                [[ part.first_name ]] [[ part.last_name ]]
+                [[ part.firstName ]] [[ part.lastName ]]
             </li>
         </ul>
 
         <h2>Participants</h2>
-        <ul>
+        <ul v-if="selfIsOrganizer === true">
             <li v-for="part in getParticipantList">
-                [[ part.first_name ]] [[ part.last_name ]]
+                <p>[[ part.firstName ]] [[ part.lastName ]] <a v-on:click="organizerMute([[ part.email ]])" href="javascript:;">Mute</a></p>
             </li>
         </ul>
+        <ul v-else>
+            <li v-for="part in getParticipantList">
+                [[ part.firstName ]] [[ part.lastName ]]
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="muteModal" style="color:black">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mute Participant</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>How many minutes do you want to mute [[ participantName ]] for? (-1 for permanent mute)</p>
+                    <input type="number" min="-1" max="1440" value="15" id="muteTimeInput"></input>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" v-on:click="muteParticipant">Mute</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 

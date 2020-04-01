@@ -85,8 +85,8 @@ def getParticipantList():
 	for i in users:
 		userList.append({
 			'id': i.id,
-			'first_name': i.first_name,
-			'last_name': i.last_name,
+			'firstName': i.first_name,
+			'lastName': i.last_name,
 			'email': i.email,
 			'isOrganizer': i.isOrganizer,
 			})

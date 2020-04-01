@@ -89,6 +89,8 @@ class ChatConsumer(WebsocketConsumer):
 			requestEmail = textDataJson['requestingEmail']
 			muteMinutes = int(textDataJson['muteMinutes'])
 			requestUser = MLHUser.objects.get(email=requestEmail)
+			print("emailToMute is {}".format(emailToMute))
+			print("requestEmail is {}".format(requestEmail))
 			if (requestUser.isOrganizer == False):
 				return
 			user = MLHUser.objects.get(email=emailToMute)
@@ -97,7 +99,7 @@ class ChatConsumer(WebsocketConsumer):
 				user.permanentMute = True
 			else:
 				user.muteUntilTime = timezone.localtime(timezone.now() + timedelta(minutes=muteMinutes), pytz.timezone(settings.TIME_ZONE))
-				notify_unmute(self, user.email, schedule=timedelta(minutes=muteMinutes))
+				self.notify_unmute(user.email, schedule=timedelta(minutes=muteMinutes))
 			user.muteInstances += 1
 			user.save()
 			for c in ChannelPermissions.objects.filter(participantID=user):
@@ -147,17 +149,18 @@ class ChatConsumer(WebsocketConsumer):
 			'email': event['email']
 		}))
 
-@background(schedule=15)
-def notify_unmute(consumerObj, userEmail):
-	for c in ChannelPermissions.objects.filter(participantID=MLHUser.objects.get(email=userEmail)):
-		#Set all permissions to 2 (read and write) that we have access to
-		if (c.permissionStatus == 1 and c.channelID.defaultPermissionStatus == 2):
-			c.permissionStatus = 2
-			c.save()
-	async_to_sync(consumerObj.channel_layer.group_send)(
-				consumerObj.room_group_name,
-				{
-					'type': 'user_unmuted',
-					'email': userEmail
-				}
-			)
+	@background(schedule=15)
+	def notify_unmute(self, userEmail):
+		for c in ChannelPermissions.objects.filter(participantID=MLHUser.objects.get(email=userEmail)):
+			#Set all permissions to 2 (read and write) that we have access to
+			if (c.permissionStatus == 1 and c.channelID.defaultPermissionStatus == 2):
+				c.permissionStatus = 2
+				c.save()
+		async_to_sync(self.channel_layer.group_send)(
+					self.room_group_name,
+					{
+						'type': 'user_unmuted',
+						'email': userEmail
+					}
+				)
+

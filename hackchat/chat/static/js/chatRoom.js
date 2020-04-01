@@ -117,6 +117,16 @@ var participantVue = new Vue({
 		},
 		findEmailFromID: function(id) {
 			return this.participantList.find(p => p.id == id).email;
+		},
+		organizerMute: function(email) {
+			//bring up a mute modal box asking how long to mute the user for
+			console.log("INSIDE ORGANIZER MUTE");
+			console.log(email[0][0]);
+			muteModalVue.showMuteModal(email[0][0]);
+		},
+		getParticipantName: function(email) {
+			participant = this.participantList.find(p => p.email == email);
+			return participant.firstName + " " + participant.lastName;
 		}
 	},
 	computed: {
@@ -146,7 +156,38 @@ var participantVue = new Vue({
 			});
 		}
 	}
-})
+});
+
+var muteModalVue = new Vue({
+	delimiters: vueDelimiters,
+	el: "#muteModal",
+	data: {
+		participantEmail: '',
+		participantName: '',
+	},
+	methods: {
+		showMuteModal: function(email) {
+			console.log(email);
+			this.participantEmail = email;
+			this.participantName = participantVue.getParticipantName(email);
+			console.log(this.participantName);
+			$("#muteModal").modal();
+		},
+		muteParticipant: function() {
+			console.log("Inside muteParticipant");
+			muteMinutes = document.getElementById("muteTimeInput").value;
+			console.log(muteMinutes);
+			$("#muteModal").modal('hide');
+			chatSocket.send(JSON.stringify({
+				messageType: 'muteUser',
+				requestingEmail: myEmail,
+				mutingEmail: this.participantEmail,
+				muteMinutes: parseInt(muteMinutes)
+			}));
+			console.log("Sent message to server");
+		}
+	}
+});
 
 var chatSocket = new WebSocket('ws://' + window.location.host + 
 	'/ws/chat/' + roomName + '/');
