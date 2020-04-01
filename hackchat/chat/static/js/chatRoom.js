@@ -63,6 +63,14 @@ var messageTypeVue = new Vue({
 			borderColor: 'white',
 			borderStyle: 'solid',
 		}
+	},
+	methods: {
+		muteUser: function() {
+			document.getElementById("chatMessageInput").readOnly = true;
+		},
+		unMuteUser: function() {
+			document.getElementById("chatMessageInput").readOnly = false;
+		}
 	}
 });
 
@@ -225,6 +233,7 @@ chatSocket.onmessage = function(e) {
 	{
 		if (messageData['email'] == myEmail)
 		{
+			messageTypeVue.muteUser();
 			if (parseInt(messageData['muteMinutes']) == -1)
 			{
 				alert("ALERT: You have been muted permanently.");
@@ -239,6 +248,7 @@ chatSocket.onmessage = function(e) {
 	{
 		if (messageData['email'] == myEmail)
 		{
+			messageTypeVue.unMuteUser();
 			alert("ALERT: You have been un-muted.");
 		}
 	}
@@ -284,4 +294,9 @@ function sendMute(id, muteTime) {
 	toSendDict['requestingEmail'] = myEmail;
 
 	chatSocket.send(JSON.stringify(toSendDict));
+}
+
+if (startMuted == true)
+{
+	messageTypeVue.muteUser();
 }

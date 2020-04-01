@@ -11,10 +11,12 @@
     {{ selfIsOrganizer|json_script:'selfIsOrganizerJSON' }}
     {{ channelList|json_script:'channelListJSON' }}
     {{ participantList|json_script:'participantListJSON' }}
+    {{ startMuted|json_script:'startMutedJSON' }}
     <script type="text/javascript">
         var initialMessages = JSON.parse(document.getElementById('initMsgJSON').text);
         var initialChannelList = JSON.parse(document.getElementById('channelListJSON').text);
         var initialParticipantList = JSON.parse(document.getElementById('participantListJSON').text);
+        var startMuted = JSON.parse(document.getElementById('startMutedJSON').text);
         var myEmail = '{{ self_email }}';
         var roomName = '{{ room_name }}';
         var selfIsOrganizer = 0;

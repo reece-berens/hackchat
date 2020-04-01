@@ -35,6 +35,17 @@ def room(request, roomName):
 	roomsInDB = Channel.objects.filter(channelName = roomName).count()
 	if (roomsInDB == 0):
 		return redirect('../')
+	
+	#See if the user is currently muted
+	tzMuteUntilTime = timezone.localtime(loggedInUser.muteUntilTime, pytz.timezone(settings.TIME_ZONE))
+	nowDate = timezone.localtime(timezone.now(), pytz.timezone(settings.TIME_ZONE))
+
+	if (nowDate < tzMuteUntilTime):
+		#The user is currently muted, so we should not let them send the message
+		#print("The user is currently muted until {}".format(tzMuteUntilTime))
+		context['startMuted'] = True
+	else:
+		context['startMuted'] = False
 
 	lastMessages = Message.objects.filter(channelID=Channel.objects.get(channelName=roomName)).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
 
