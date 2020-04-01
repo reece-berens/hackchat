@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 from background_task import background
 from django.conf import settings
 
+import threading, time
+
 utc = pytz.UTC
 
 #SYNCHRONOUS VERSION
@@ -99,7 +101,11 @@ class ChatConsumer(WebsocketConsumer):
 				user.permanentMute = True
 			else:
 				user.muteUntilTime = timezone.localtime(timezone.now() + timedelta(minutes=muteMinutes), pytz.timezone(settings.TIME_ZONE))
-				self.notify_unmute(user.email, schedule=timedelta(minutes=muteMinutes))
+				#self.notify_unmute(user.email, schedule=timedelta(minutes=muteMinutes))
+
+				####################### HERE'S THE THREADING TEST #################################
+				unmuteThread = threading.Thread(target=self.notify_unmute, args=(user.email, muteMinutes))
+				unmuteThread.start()
 			user.muteInstances += 1
 			user.save()
 			for c in ChannelPermissions.objects.filter(participantID=user):
@@ -149,8 +155,12 @@ class ChatConsumer(WebsocketConsumer):
 			'email': event['email']
 		}))
 
-	@background(schedule=15)
-	def notify_unmute(self, userEmail):
+	#@background(schedule=15)
+	def notify_unmute(self, userEmail, timeToMute):
+		print("Inside background task notify_unmute")
+		print("Sleeping for {} minutes".format(timeToMute))
+		time.sleep(60 * int(timeToMute))
+		print("Resetting channel permissions and notifying everyone")
 		for c in ChannelPermissions.objects.filter(participantID=MLHUser.objects.get(email=userEmail)):
 			#Set all permissions to 2 (read and write) that we have access to
 			if (c.permissionStatus == 1 and c.channelID.defaultPermissionStatus == 2):

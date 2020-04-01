@@ -225,7 +225,7 @@ chatSocket.onmessage = function(e) {
 	{
 		if (messageData['email'] == myEmail)
 		{
-			if (int(messageData['muteMinutes']) == -1)
+			if (parseInt(messageData['muteMinutes']) == -1)
 			{
 				alert("ALERT: You have been muted permanently.");
 			}
