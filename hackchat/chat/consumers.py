@@ -6,7 +6,6 @@ from .models import Message, Channel, ChannelPermissions
 from mlhAuth.models import MLHUser
 from django.utils import timezone
 from datetime import datetime, timedelta
-from background_task import background
 from django.conf import settings
 
 import threading, time
