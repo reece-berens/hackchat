@@ -82,8 +82,8 @@
         </div>
 
         <div id="chatTypeWindow" v-bind:style="divStyleObject">
-            <input id="chatMessageInput" type="text" size="100"/>
-            <input id="chatMessageSend" type="button" value="Send"/>
+            <textarea id="chatMessageInput" rows="2" cols="70" placeholder="Type your chat message here..." v-bind:style="textAreaStyleObject"></textarea>
+            <button id="chatMessageSend" type="button" class="btn btn-secondary">Send</button>
         </div>
     </div>
 

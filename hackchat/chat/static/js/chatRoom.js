@@ -58,18 +58,31 @@ var messageTypeVue = new Vue({
 	data: {
 		message: '',
 		divStyleObject: {
-			height: '10%',
+			//height: '10%',
 			border: '3px',
 			borderColor: 'white',
 			borderStyle: 'solid',
+		},
+		textAreaStyleObject: {
+			backgroundColor: '#575757',
+			color: 'white',
+			resize: 'none',
+			marginTop: '2px',
+			marginLeft: '2px'
+		},
+		buttonStyleObject: {
+			//marginTop: '2px',
+			paddingLeft: '5px',
 		}
 	},
 	methods: {
 		muteUser: function() {
 			document.getElementById("chatMessageInput").readOnly = true;
+			document.getElementById("chatMessageSend").disabled = true;
 		},
 		unMuteUser: function() {
 			document.getElementById("chatMessageInput").readOnly = false;
+			document.getElementById("chatMessageSend").disabled = false;
 		}
 	}
 });

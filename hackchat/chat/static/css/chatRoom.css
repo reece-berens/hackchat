@@ -39,3 +39,23 @@
 #chatWindow {
 	overflow-y: auto;
 }
+
+textarea::-webkit-input-placeholder {
+	color: white;
+}
+
+textarea:-moz-placeholder { /* Firefox 18- */
+	color: white;  
+}
+
+textarea::-moz-placeholder {  /* Firefox 19+ */
+	color: white;  
+}
+
+textarea:-ms-input-placeholder {
+	color: white;  
+}
+
+textarea::placeholder {
+	color: white;  
+}
