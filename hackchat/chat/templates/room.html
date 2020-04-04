@@ -19,7 +19,10 @@
         var startMuted = JSON.parse(document.getElementById('startMutedJSON').text);
         var myEmail = '{{ self_email }}';
         var roomName = '{{ room_name }}';
+        var myName = '{{ self_name }}';
         var selfIsOrganizer = 0;
+        let audioNotificationSource = "{% static '/sounds/ding.mp3' %}";
+        var audioNotification = new Audio(audioNotificationSource);
         if (JSON.parse(document.getElementById('selfIsOrganizerJSON').text) == "true")
         {
             selfIsOrganizer = true;

@@ -49,6 +49,10 @@ class ChatConsumer(WebsocketConsumer):
 				print("The user is currently muted until {}".format(tzMuteUntilTime))
 				return
 			
+			if ('@everyone' in message and authorObject.isOrganizer == False):
+				#The message tries to send a notification to everyone, but the author isn't an organizer
+				message = message.replace('@everyone', '')
+
 			channelObject = Channel.objects.filter(channelName=roomName)[0]
 			dbMsg = Message()
 			dbMsg.author = authorObject

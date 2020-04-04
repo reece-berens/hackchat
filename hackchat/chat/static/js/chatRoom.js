@@ -240,6 +240,10 @@ chatSocket.onmessage = function(e) {
 	console.log(messageData);
 	if (messageData['messageType'] == 'chatMessage')
 	{
+		if (messageData['contents'].includes('@' + myName) || messageData['contents'].includes('@everyone'))
+		{
+			playNotificationSound();
+		}
 		chatVue.addMessage(messageData);
 	}
 	else if (messageData['messageType'] == 'userMuted')
@@ -307,6 +311,11 @@ function sendMute(id, muteTime) {
 	toSendDict['requestingEmail'] = myEmail;
 
 	chatSocket.send(JSON.stringify(toSendDict));
+}
+
+//https://stackoverflow.com/questions/9419263/playing-audio-with-javascript/18628124#18628124
+function playNotificationSound() {
+	audioNotification.play();
 }
 
 if (startMuted == true)

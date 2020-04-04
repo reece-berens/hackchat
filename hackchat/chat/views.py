@@ -86,6 +86,7 @@ def room(request, roomName):
 	context['channelList'] = getChannelList()
 	context['participantList'] = getParticipantList()
 	context['self_email'] = email
+	context['self_name'] = "{} {}".format(loggedInUser.first_name, loggedInUser.last_name)
 	return render(request,'room.html', context)
 
 #This will get the lists of all organizers and normal users for the participant column
