@@ -1,0 +1,33 @@
+{% load static %}
+
+<nav class="navbar sticky-top">
+	<div class="container-fluid">
+		<ul class="navbar-nav">
+			{% if user.loggedIn %}
+				<li class="nav-item left">
+					<h3>Hello, {{ user.firstName }} {{ user.lastName }}!</h3>
+				</li>
+			{% else %}
+				<li class="nav-item left">
+					<h3>Welcome to Hackchat for {{ hackathon_name }} {{ hackathon_year }}!</h3>
+				</li>
+				
+			{% endif %}
+		</ul>
+
+		<ul class="nav navbar-nav ml-auto">
+			{% if user.loggedIn %}
+				<li class="nav-item right">
+					<form class="form-inline" method="post" action="{% url 'account_logout' %}">
+						{% csrf_token %}
+						<button class="btn btn-danger" type="submit">Logout</button>
+					</form>
+				</li>
+			{% else %}
+				<li class="nav-item right">
+					<a href="{% url 'account_login' %}" class="btn btn-success">Log in</a>
+				</li>
+			{% endif %}
+		</ul>
+	</div>
+</nav>

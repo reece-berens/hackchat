@@ -15,6 +15,11 @@ def index(request):
 		#The user is not logged in, so we want to send them back to the login page
 		return redirect('../accounts/login/')
 	print(request.user.is_anonymous)
+	context['user'] = {'loggedIn': True}
+	email = request.user
+	loggedInUser = MLHUser.objects.get(email=email)
+	context['user']['firstName'] = loggedInUser.first_name
+	context['user']['lastName'] = loggedInUser.last_name
 	return render(request, 'chatIndex.html', context)
 
 def room(request, roomName):
@@ -23,8 +28,11 @@ def room(request, roomName):
 	if (request.user.is_anonymous):
 		#The user is not logged in, so we want to send them back to the login page
 		return redirect('../accounts/login/')
+	context['user'] = {'loggedIn': True}
 	email = request.user
 	loggedInUser = MLHUser.objects.get(email=email)
+	context['user']['firstName'] = loggedInUser.first_name
+	context['user']['lastName'] = loggedInUser.last_name
 	print(loggedInUser)
 	print(type(loggedInUser))
 	print(loggedInUser.isOrganizer)

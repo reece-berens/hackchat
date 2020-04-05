@@ -8,6 +8,9 @@
 </head>
 
 <body style="text-align: center">
+    {% block nav_block %}
+        {% include 'navbar.html' %}
+    {% endblock %}
 	<h1>Welcome to the chat server for {{ hackathon_name }}!</h1>
     <img src='{% static '/img/logo_scaled.png' %}'>
     <br><br>
