@@ -41,14 +41,9 @@
     {% endblock %}
     <div class="column channelColumn" id="channelColumn">
         <h2>Channels</h2>
-        <ul v-if="selfIsOrganizer == true" id="if">
-            <li v-for="channel in showAllChannels">
-                <a v-on:click="redirect([[ channel.channelName ]])" href="javascript:;">[[ channel.channelName ]]</a>
-            </li>
-        </ul>
-        <ul v-else id="else">
-            <li v-for="channel in showOnlyNonOrganizerChannels">
-                <a v-on:click="redirect([[ channel.channelName ]])" href="javascript:;">[[ channel.channelName ]]</a>
+        <ul>
+            <li v-for="channel in channelList">
+                <a href="javascript:;" v-on:click="redirect(channel.channelName)">[[ channel.channelName ]]</a>
             </li>
         </ul>
     </div>

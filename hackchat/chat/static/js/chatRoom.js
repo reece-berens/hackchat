@@ -103,7 +103,7 @@ var channelVue = new Vue({
 			window.location.replace('http://' + window.location.host + '/chat/' + name);
 		}
 	},
-	computed: {
+	/*computed: {
 		//https://forum.vuejs.org/t/how-to-best-work-with-v-for-and-computed-lists/49994
 		showOnlyNonOrganizerChannels: function() {
 			//console.log("Inside only non");
@@ -122,7 +122,7 @@ var channelVue = new Vue({
 		showAllChannels: function() {
 			return this.channelList;
 		}
-	}
+	}*/
 });
 
 var participantVue = new Vue({
