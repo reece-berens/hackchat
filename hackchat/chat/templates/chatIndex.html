@@ -7,10 +7,16 @@
     {% endblock %}
 </head>
 
-<body>
+<body style="text-align:center">
 	{% block nav_block %}
         {% include 'navbar.html' %}
     {% endblock %}
-	<h3>This here is the landing page of chat</h3>
+	<h3>Choose a channel to chat in:</h3>
+    {% comment %}
+        https://stackoverflow.com/questions/25345392/how-to-add-url-parameters-to-django-template-url-tag
+    {% endcomment %}
+    {% for channel in channelList %}
+        <p><a href="{% url 'room' roomName=channel.channelName %}">{{ channel.channelName }}</a></p>
+    {% endfor %}
 </body>
 </html>

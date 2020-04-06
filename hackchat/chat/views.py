@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.urls import reverse
 
-from .models import Message, Channel
+from .models import Message, Channel, ChannelPermissions
 from mlhAuth.models import MLHUser
 import json, pytz
 from django.utils import timezone
@@ -20,6 +20,10 @@ def index(request):
 	loggedInUser = MLHUser.objects.get(email=email)
 	context['user']['firstName'] = loggedInUser.first_name
 	context['user']['lastName'] = loggedInUser.last_name
+
+	#Build list of channels to send to landing page
+	context['channelList'] = getChannelList(loggedInUser)
+
 	return render(request, 'chatIndex.html', context)
 
 def room(request, roomName):
@@ -91,7 +95,7 @@ def room(request, roomName):
 	print(type(msgsForSend))
 	context['room_name'] = roomName
 	context['previous_messages'] = msgsForSend
-	context['channelList'] = getChannelList()
+	context['channelList'] = getChannelList(loggedInUser)
 	context['participantList'] = getParticipantList()
 	context['self_email'] = email
 	context['self_name'] = "{} {}".format(loggedInUser.first_name, loggedInUser.last_name)
@@ -114,7 +118,8 @@ def getParticipantList():
 
 #This will get the list of all channels registered to the chat server
 #It will be used for the chat landing page and channel column of the main chat page
-def getChannelList():
+def getChannelList(loggedInUser):
+	"""
 	channels = Channel.objects.order_by('channelName')
 	channelList = []
 	for i in channels:
@@ -124,3 +129,17 @@ def getChannelList():
 			'organizerOnly': i.organizerOnly
 		})
 	return channelList
+	"""
+	CPfromDB = ChannelPermissions.objects.filter(participantID=loggedInUser)
+	CfromDB = Channel.objects.all().order_by('channelName')
+	channelsList = []
+	for c in CfromDB:
+		#Find the channels that we have a valid CP for
+		cp = CPfromDB.get(channelID=c)
+		print(cp)
+		if (cp.permissionStatus > 0):
+			channelsList.append({
+				'id': c.id,
+				'channelName': c.channelName,
+			})
+	return channelsList
