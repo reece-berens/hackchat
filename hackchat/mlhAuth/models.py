@@ -8,6 +8,7 @@ class MLHUser(AbstractUser):
 	muteUntilTime = models.DateTimeField()
 	permanentMute = models.BooleanField(default=False)
 	muteInstances = models.IntegerField(default=0)
+	token = models.CharField(default="", max_length=10)
 
 	def __str__(self):
 		return "{}".format(self.email)

@@ -269,6 +269,13 @@ chatSocket.onmessage = function(e) {
 			alert("ALERT: You have been un-muted.");
 		}
 	}
+	else if (messageData['messageType'] == 'error')
+	{
+		if (messageData['email'] == myEmail)
+		{
+			alert("ALERT: Something bad has been changed. Please reload the page.");
+		}
+	}
 };
 
 chatSocket.onclose = function(e) {
@@ -296,6 +303,7 @@ function sendMessage() {
 	toSendDict['message'] = messageText;
 	toSendDict['authorEmail'] = myEmail;
 	toSendDict['roomName'] = roomName;
+	toSendDict['token'] = myToken;
 	console.log(toSendDict);
 
 	chatSocket.send(JSON.stringify(toSendDict));
@@ -309,6 +317,7 @@ function sendMute(id, muteTime) {
 	toSendDict['mutingEmail'] = emailOfMuteUser;
 	toSendDict['muteMinutes'] = muteTime;
 	toSendDict['requestingEmail'] = myEmail;
+	toSendDict['token'] = myToken;
 
 	chatSocket.send(JSON.stringify(toSendDict));
 }

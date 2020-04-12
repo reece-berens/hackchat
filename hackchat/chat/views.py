@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from .models import Message, Channel, ChannelPermissions
 from mlhAuth.models import MLHUser
-import json, pytz
+import json, pytz, secrets
 from django.utils import timezone
 
 # Create your views here.
@@ -59,6 +59,12 @@ def room(request, roomName):
 	else:
 		context['startMuted'] = False
 
+	#Generate new token for the user
+	# https://docs.python.org/3/library/secrets.html
+	newToken = secrets.token_urlsafe(5)
+	loggedInUser.token = newToken
+	loggedInUser.save()
+
 	lastMessages = Message.objects.filter(channelID=Channel.objects.get(channelName=roomName)).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
 
 	"""
@@ -99,6 +105,7 @@ def room(request, roomName):
 	context['participantList'] = getParticipantList()
 	context['self_email'] = email
 	context['self_name'] = "{} {}".format(loggedInUser.first_name, loggedInUser.last_name)
+	context['token'] = loggedInUser.token
 	return render(request,'room.html', context)
 
 #This will get the lists of all organizers and normal users for the participant column

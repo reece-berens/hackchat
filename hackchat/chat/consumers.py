@@ -38,11 +38,24 @@ class ChatConsumer(WebsocketConsumer):
 			message = textDataJson['message']
 			author = textDataJson['authorEmail']
 			roomName = textDataJson['roomName']
+			token = textDataJson['token']
 			#print("In receive")
 			#We need to store the message in the database here since this is where it comes in from the websocket
 			authorObject = MLHUser.objects.filter(email=author)[0]
 			tzMuteUntilTime = timezone.localtime(authorObject.muteUntilTime, pytz.timezone(settings.TIME_ZONE))
 			nowDate = timezone.localtime(timezone.now(), pytz.timezone(settings.TIME_ZONE))
+
+			#print("token received {} should be {}".format(token, authorObject.token))
+			if (token != authorObject.token):
+				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
+				async_to_sync(self.channel_layer.group_send)(
+					self.room_group_name,
+					{
+						'type': 'error',
+						'email': author,
+					}
+				)
+				return
 
 			if (nowDate < tzMuteUntilTime):
 				#The user is currently muted, so we should not let them send the message
@@ -155,6 +168,12 @@ class ChatConsumer(WebsocketConsumer):
 	def user_unmuted(self, event):
 		self.send(text_data=json.dumps({
 			'messageType': 'userUnmuted',
+			'email': event['email']
+		}))
+
+	def error(self, event):
+		self.send(text_data=json.dumps({
+			'messageType': 'error',
 			'email': event['email']
 		}))
 
