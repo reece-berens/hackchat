@@ -16,6 +16,7 @@ utc = pytz.UTC
 class ChatConsumer(WebsocketConsumer):
 	def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['roomName']
+		print("self.room_name in connect is {}".format(self.room_name))
 		self.room_group_name = 'chat_%s' % self.room_name
 		#Join room group
 		async_to_sync(self.channel_layer.group_add)(
@@ -102,6 +103,18 @@ class ChatConsumer(WebsocketConsumer):
 					'fromOrg': authorObject.isOrganizer
 				}
 			)
+
+			if ('@everyone' in message):
+				for channelToNotify in Channel.objects.all():
+					async_to_sync(self.channel_layer.group_send)(
+						'chat_{}'.format(channelToNotify.channelName),
+						{
+							'type': 'mention_from_other_channel',
+							#'messageType': 'chatMessage',
+							'contents': message,
+							'fromChannel': self.room_name
+						}
+					)
 		elif (typeOfMessage == 'muteUser'):
 			emailToMute = textDataJson['mutingEmail']
 			requestEmail = textDataJson['requestingEmail']
@@ -142,7 +155,13 @@ class ChatConsumer(WebsocketConsumer):
 		#self.send(text_data = json.dumps({
 		#	'message': message
 		#}))
-		
+	
+	def mention_from_other_channel(self, event):
+		self.send(text_data=json.dumps({
+			'messageType': 'mentionInOtherChannel',
+			'contents': event['contents'],
+			'fromChannel': event['fromChannel'],
+		}))
 
 	#Receive message from room group
 	def chat_message(self, event):

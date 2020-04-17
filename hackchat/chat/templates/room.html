@@ -21,6 +21,7 @@
         var roomName = '{{ room_name }}';
         var myName = '{{ self_name }}';
         var myToken = '{{ token }}';
+        var currentChannel = '{{ currentRoom }}';
         var selfIsOrganizer = 0;
         let audioNotificationSource = "{% static '/sounds/ding.mp3' %}";
         var audioNotification = new Audio(audioNotificationSource);
@@ -44,7 +45,12 @@
         <h2>Channels</h2>
         <ul>
             <li v-for="channel in channelList">
-                <a href="javascript:;" v-on:click="redirect(channel.channelName)">[[ channel.channelName ]]</a>
+                <div v-if="channel.notifications == 0">
+                    <a href="javascript:;" v-on:click="redirect(channel.channelName)">[[ channel.channelName ]]</a>
+                </div>
+                <div v-else>
+                    <a href="javascript:;" v-on:click="redirect(channel.channelName)">[[ channel.channelName ]] ([[ channel.notifications ]])</a>
+                </div>
             </li>
         </ul>
     </div>

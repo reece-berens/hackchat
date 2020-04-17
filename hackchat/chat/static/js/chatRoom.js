@@ -87,16 +87,27 @@ var messageTypeVue = new Vue({
 	}
 });
 
+function buildChannelList(channelNameList) 
+{
+	retList = [];
+	channelNameList.forEach(channel => retList.push({'channelName': channel.channelName, 'notifications': 0, 'id': channel.id}));
+	return retList;
+}
+
 var channelVue = new Vue({
 	delimiters: vueDelimiters,
 	el: '#channelColumn',
 	data: {
-		channelList: initialChannelList,
+		channelList: buildChannelList(initialChannelList),
 		selfIsOrganizer: selfIsOrganizer,
 	},
 	methods: {
 		addChannel: function(e) {
 			this.channelList.push(e);
+		},
+		notification: function(e) {
+			notifiedChannel = this.channelList.find(channel => channel.channelName == e);
+			notifiedChannel.notifications += 1;
 		},
 		redirect: function(name) {
 			//console.log("INSIDE REDIRECT VUE " + name);
@@ -274,6 +285,14 @@ chatSocket.onmessage = function(e) {
 		if (messageData['email'] == myEmail)
 		{
 			alert("ALERT: Something bad has been changed. Please reload the page.");
+		}
+	}
+	else if (messageData['messageType'] == 'mentionInOtherChannel')
+	{
+		notifiedChannel = messageData['fromChannel'];
+		if (notifiedChannel != currentChannel)
+		{
+			channelVue.notification(notifiedChannel);
 		}
 	}
 };
