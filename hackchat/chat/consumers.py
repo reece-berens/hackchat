@@ -94,6 +94,7 @@ class ChatConsumer(WebsocketConsumer):
 				self.room_group_name,
 				{
 					'type': 'chat_message',
+					'id': dbMsg.id,
 					'messageType': 'chatMessage',
 					'contents': message,
 					'email': author,
@@ -119,12 +120,24 @@ class ChatConsumer(WebsocketConsumer):
 			emailToMute = textDataJson['mutingEmail']
 			requestEmail = textDataJson['requestingEmail']
 			muteMinutes = int(textDataJson['muteMinutes'])
+			token = textDataJson['token']
 			requestUser = MLHUser.objects.get(email=requestEmail)
 			print("emailToMute is {}".format(emailToMute))
 			print("requestEmail is {}".format(requestEmail))
 			if (requestUser.isOrganizer == False):
 				return
 			user = MLHUser.objects.get(email=emailToMute)
+			authorObject = MLHUser.objects.get(email=requestEmail)
+			if (token != authorObject.token):
+				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
+				async_to_sync(self.channel_layer.group_send)(
+					self.room_group_name,
+					{
+						'type': 'error',
+						'email': author,
+					}
+				)
+				return
 			if (muteMinutes == -1):
 				#permanent mute
 				user.permanentMute = True
@@ -151,7 +164,21 @@ class ChatConsumer(WebsocketConsumer):
 					'muteMinutes': muteMinutes
 				}
 			)
-		
+		elif (typeOfMessage == 'lastReadMessage'):
+			print("GOT LAST MESSAGE ID FOR THIS USER")
+			userEmail = textDataJson['email']
+			channelName = textDataJson['channelName']
+			token = textDataJson['token']
+			print(textDataJson)
+			print(type(textDataJson['lastMessageID']))
+			lastMsgID = int(textDataJson['lastMessageID'])
+			authorObject = MLHUser.objects.filter(email=userEmail)[0]
+			if (token != authorObject.token):
+				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
+				return
+			cp = ChannelPermissions.objects.filter(participantID=authorObject).get(channelID=Channel.objects.get(channelName=channelName))
+			cp.lastReadMessage = lastMsgID
+			cp.save()
 		#self.send(text_data = json.dumps({
 		#	'message': message
 		#}))
@@ -169,6 +196,7 @@ class ChatConsumer(WebsocketConsumer):
 		#Send message to WebSocket
 		self.send(text_data=json.dumps({
 			'messageType': 'chatMessage',
+			'id': event['id'],
 			'contents': event['contents'],
 			'email': event['email'],
 			'firstName': event['firstName'],

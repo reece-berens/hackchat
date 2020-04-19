@@ -37,9 +37,9 @@ def room(request, roomName):
 	loggedInUser = MLHUser.objects.get(email=email)
 	context['user']['firstName'] = loggedInUser.first_name
 	context['user']['lastName'] = loggedInUser.last_name
-	print(loggedInUser)
-	print(type(loggedInUser))
-	print(loggedInUser.isOrganizer)
+	#print(loggedInUser)
+	#print(type(loggedInUser))
+	#print(loggedInUser.isOrganizer)
 	context['selfIsOrganizer'] = json.dumps(loggedInUser.isOrganizer)
 
 	#We want to make sure the channel exists in the database
@@ -47,7 +47,8 @@ def room(request, roomName):
 	roomsInDB = Channel.objects.filter(channelName = roomName).count()
 	if (roomsInDB == 0):
 		return redirect('../')
-	
+	currentChannel = Channel.objects.get(channelName = roomName)
+
 	#See if the user is currently muted
 	tzMuteUntilTime = timezone.localtime(loggedInUser.muteUntilTime, pytz.timezone(settings.TIME_ZONE))
 	nowDate = timezone.localtime(timezone.now(), pytz.timezone(settings.TIME_ZONE))
@@ -65,7 +66,13 @@ def room(request, roomName):
 	loggedInUser.token = newToken
 	loggedInUser.save()
 
-	lastMessages = Message.objects.filter(channelID=Channel.objects.get(channelName=roomName)).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
+	#Load all unread messages for the user in this channel
+	cp = ChannelPermissions.objects.filter(participantID=loggedInUser).get(channelID=currentChannel)
+	lastReadMessageID = cp.lastReadMessage
+	lastMessages = Message.objects.filter(channelID=currentChannel).filter(id__gt=lastReadMessageID).order_by('-id')[::-1]
+	#If we have read all of the messages, show the last few
+	if (len(lastMessages) == 0):
+		lastMessages = Message.objects.filter(channelID=currentChannel).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
 
 	"""
 	msgsForSend = [
@@ -98,7 +105,6 @@ def room(request, roomName):
 			'time': timezone.localtime(i.messageTimestamp, pytz.timezone('America/Chicago')).strftime("%a %I:%M %p"),
 			'fromOrg': i.author.isOrganizer
 		})
-	print(type(msgsForSend))
 	context['room_name'] = roomName
 	context['previous_messages'] = msgsForSend
 	context['channelList'] = getChannelList(loggedInUser)

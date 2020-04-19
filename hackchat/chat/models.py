@@ -15,6 +15,7 @@ class ChannelPermissions(models.Model):
 	channelID = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='channel_id_for_permission')
 	participantID = models.ForeignKey(MLHUser, on_delete=models.CASCADE, related_name='participant_id_for_permission')
 	permissionStatus = models.IntegerField(default=0)
+	lastReadMessage = models.IntegerField(default=1)
 	"""
 		Permission status values:
 			0 - cannot read or write to channel

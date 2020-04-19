@@ -46,8 +46,11 @@ var chatVue = new Vue({
 		}
 	},
 	methods: {
-		addMessage: function(e) {
+		addMessage: function(e){
 			this.messages.push(e);
+		},
+		getLastMessageID: function(e){
+			return this.messages[this.messages.length - 1].id;
 		}
 	}
 });
@@ -341,6 +344,18 @@ function sendMute(id, muteTime) {
 	chatSocket.send(JSON.stringify(toSendDict));
 }
 
+function sendLastMessageID(messageID)
+{
+	console.log("Sending final message back to server")
+	chatSocket.send(JSON.stringify({
+		'messageType': 'lastReadMessage',
+		'channelName': currentChannel,
+		'email': myEmail,
+		'token': myToken,
+		'lastMessageID': messageID
+	}));
+}
+
 //https://stackoverflow.com/questions/9419263/playing-audio-with-javascript/18628124#18628124
 function playNotificationSound() {
 	audioNotification.play();
@@ -349,4 +364,9 @@ function playNotificationSound() {
 if (startMuted == true)
 {
 	messageTypeVue.muteUser();
+}
+
+window.onbeforeunload = function(){
+	msgID = chatVue.getLastMessageID();
+	sendLastMessageID(msgID);
 }
