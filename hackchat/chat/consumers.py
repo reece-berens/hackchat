@@ -179,6 +179,40 @@ class ChatConsumer(WebsocketConsumer):
 			cp = ChannelPermissions.objects.filter(participantID=authorObject).get(channelID=Channel.objects.get(channelName=channelName))
 			cp.lastReadMessage = lastMsgID
 			cp.save()
+		elif (typeOfMessage == 'getPreviousMessages'):
+			userEmail = textDataJson['email']
+			channelName = textDataJson['channelName']
+			token = textDataJson['token']
+			print(textDataJson)
+			print(type(textDataJson['earliestMessageID']))
+			earliestMsgID = int(textDataJson['earliestMessageID'])
+			authorObject = MLHUser.objects.get(email=userEmail)
+			if (token != authorObject.token):
+				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
+				return
+			filterChannel = Channel.objects.get(channelName=channelName)
+			validMessages = Message.objects.filter(channelID=filterChannel).filter(id__lt=earliestMsgID).order_by('-id')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
+			print(validMessages)
+			print(type(validMessages))
+			msgList = []
+			for m in validMessages:
+				msgList.append({
+					'id': m.id,
+					'firstName': m.author.first_name,
+					'lastName': m.author.last_name,
+					'email': m.author.email,
+					'contents': m.messageText,
+					'time': timezone.localtime(m.messageTimestamp, pytz.timezone('America/Chicago')).strftime("%a %I:%M %p"),
+					'fromOrg': m.author.isOrganizer
+				})
+			async_to_sync(self.channel_layer.group_send)(
+				self.room_group_name,
+				{
+					'type': 'previous_messages',
+					'email': authorObject.email,
+					'previousMessages': msgList
+				}
+			)
 		#self.send(text_data = json.dumps({
 		#	'message': message
 		#}))
@@ -216,6 +250,13 @@ class ChatConsumer(WebsocketConsumer):
 		self.send(text_data=json.dumps({
 			'messageType': 'userUnmuted',
 			'email': event['email']
+		}))
+
+	def previous_messages(self, event):
+		self.send(text_data=json.dumps({
+			'messageType': 'previousMessages',
+			'email': event['email'],
+			'messageList': event['previousMessages']
 		}))
 
 	def error(self, event):

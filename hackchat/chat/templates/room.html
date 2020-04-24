@@ -87,6 +87,7 @@
         <div id="chatTypeWindow" v-bind:style="divStyleObject">
             <textarea id="chatMessageInput" rows="2" cols="70" placeholder="Type your chat message here..." v-bind:style="textAreaStyleObject"></textarea>
             <button id="chatMessageSend" type="button" class="btn btn-secondary">Send</button>
+            <button id="chatMessageLoadPreviousMessages" type="button" class="btn btn-secondary" onclick="getPreviousMessages()">Load Previous Messages</button>
         </div>
     </div>
 

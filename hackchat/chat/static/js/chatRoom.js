@@ -51,6 +51,13 @@ var chatVue = new Vue({
 		},
 		getLastMessageID: function(e){
 			return this.messages[this.messages.length - 1].id;
+		},
+		getEarliestMessageID: function(e){
+			return this.messages[0].id;
+		},
+		addPreviousMessages: function(e){
+			reversedMessages = e.reverse()
+			reversedMessages.forEach(x => this.messages.unshift(x));
 		}
 	}
 });
@@ -298,6 +305,15 @@ chatSocket.onmessage = function(e) {
 			channelVue.notification(notifiedChannel);
 		}
 	}
+	else if (messageData['messageType'] == 'previousMessages')
+	{
+		if (messageData['email'] == myEmail)
+		{
+			var tempEarlier = messageData['messageList'];
+			console.log(tempEarlier);
+			chatVue.addPreviousMessages(tempEarlier);
+		}	
+	}
 };
 
 chatSocket.onclose = function(e) {
@@ -322,7 +338,7 @@ function sendMessage() {
 	var messageText = $("#chatMessageInput")[0].value;
 	console.log(messageText);
 	var toSendDict = {'messageType': 'message'};
-	toSendDict['message'] = messageText;
+	toSendDict['message'] = messageText.substr(0, messageText.length - 1); //get rid of the enter character at the end of messages
 	toSendDict['authorEmail'] = myEmail;
 	toSendDict['roomName'] = roomName;
 	toSendDict['token'] = myToken;
@@ -353,6 +369,19 @@ function sendLastMessageID(messageID)
 		'email': myEmail,
 		'token': myToken,
 		'lastMessageID': messageID
+	}));
+}
+
+function getPreviousMessages()
+{
+	console.log("Getting previous messages with earliest id of ");
+	console.log(chatVue.getEarliestMessageID());
+	chatSocket.send(JSON.stringify({
+		'messageType': 'getPreviousMessages',
+		'channelName': currentChannel,
+		'email': myEmail,
+		'token': myToken,
+		'earliestMessageID': chatVue.getEarliestMessageID()
 	}));
 }
 
