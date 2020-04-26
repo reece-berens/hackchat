@@ -348,6 +348,11 @@ function sendMessage() {
 	console.log(messageText);
 	var toSendDict = {'messageType': 'message'};
 	toSendDict['message'] = messageText.substr(0, messageText.length - 1); //get rid of the enter character at the end of messages
+	if (toSendDict['message'] == '')
+	{
+		//Don't send a message that is empty
+		return;
+	}
 	toSendDict['authorEmail'] = myEmail;
 	toSendDict['roomName'] = roomName;
 	toSendDict['token'] = myToken;
