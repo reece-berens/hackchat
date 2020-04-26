@@ -182,3 +182,15 @@ SECURE_SSL_REDIRECT = True if ACCOUNT_DEFAULT_HTTP_PROTOCOL == 'https' else Fals
 DEFAULT_CONTEXT = json.loads(os.getenv('DEFAULT_CONTEXT'))
 
 PREV_CHAT_MSGS_TO_LOAD = int(os.getenv('PREV_CHAT_MSGS_TO_LOAD'))
+
+BANNED_WORD_FILE = os.getenv('BANNED_WORD_FILE')
+
+def loadBannedWordList():
+    f = open(BANNED_WORD_FILE, 'r')
+    bannedList = []
+    for line in f:
+        bannedList.append(line.strip())
+    f.close()
+    return bannedList
+
+BANNED_WORD_LIST = loadBannedWordList()

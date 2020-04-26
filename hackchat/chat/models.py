@@ -32,3 +32,4 @@ class Message(models.Model):
 	author = models.ForeignKey(MLHUser, on_delete=models.CASCADE, related_name='participant_id_for_message_author')
 	messageText = models.CharField(max_length=2048, default="")
 	messageTimestamp = models.DateTimeField(auto_now=True) #automatically sets to time of creation in database
+	containsBannedPhrase = models.BooleanField(default=False)

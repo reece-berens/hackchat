@@ -85,6 +85,28 @@ class ChatConsumer(WebsocketConsumer):
 			#print(Channel.objects.filter(channelName=roomName)[0].channelName)
 			#print(MLHUser.objects.filter(email=author)[0])
 			dbMsg.save()
+			muteTimeForBannedWord = 3
+			#Make sure no banned words are in the message
+			for bannedWord in settings.BANNED_WORD_LIST:
+				if (bannedWord in message.lower()):
+					#Mute the user and don't send the message
+					dbMsg.containsBannedPhrase = True
+					dbMsg.save()
+					authorObject.muteInstances += muteTimeForBannedWord
+					authorObject.muteUntilTime = timezone.localtime(timezone.now() + timedelta(minutes=muteTimeForBannedWord), pytz.timezone(settings.TIME_ZONE))
+					authorObject.save()
+					async_to_sync(self.channel_layer.group_send)(
+						self.room_group_name,
+						{
+							'type': 'user_muted',
+							'email': authorObject.email,
+							'muteMinutes': 1,
+							'forBannedWord': True
+						}
+					)
+					unmuteThread = threading.Thread(target=self.notify_unmute, args=(authorObject.email, muteTimeForBannedWord))
+					unmuteThread.start()
+					return
 
 			tempDateTime = dbMsg.messageTimestamp
 			localDT = timezone.localtime(dbMsg.messageTimestamp, pytz.timezone(settings.TIME_ZONE))
@@ -144,7 +166,6 @@ class ChatConsumer(WebsocketConsumer):
 			else:
 				user.muteUntilTime = timezone.localtime(timezone.now() + timedelta(minutes=muteMinutes), pytz.timezone(settings.TIME_ZONE))
 				#self.notify_unmute(user.email, schedule=timedelta(minutes=muteMinutes))
-
 				####################### HERE'S THE THREADING TEST #################################
 				unmuteThread = threading.Thread(target=self.notify_unmute, args=(user.email, muteMinutes))
 				unmuteThread.start()
@@ -161,7 +182,8 @@ class ChatConsumer(WebsocketConsumer):
 				{
 					'type': 'user_muted',
 					'email': user.email,
-					'muteMinutes': muteMinutes
+					'muteMinutes': muteMinutes,
+					'forBannedWord': False
 				}
 			)
 		elif (typeOfMessage == 'lastReadMessage'):
@@ -191,7 +213,7 @@ class ChatConsumer(WebsocketConsumer):
 				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
 				return
 			filterChannel = Channel.objects.get(channelName=channelName)
-			validMessages = Message.objects.filter(channelID=filterChannel).filter(id__lt=earliestMsgID).order_by('-id')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
+			validMessages = Message.objects.filter(channelID=filterChannel).filter(id__lt=earliestMsgID).filter(containsBannedPhrase=False).order_by('-id')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
 			print(validMessages)
 			print(type(validMessages))
 			msgList = []
@@ -243,7 +265,8 @@ class ChatConsumer(WebsocketConsumer):
 		self.send(text_data=json.dumps({
 			'messageType': 'userMuted',
 			'email': event['email'],
-			'muteMinutes': event['muteMinutes']
+			'muteMinutes': event['muteMinutes'],
+			'forBannedWord': event['forBannedWord']
 		}))
 
 	def user_unmuted(self, event):
@@ -277,10 +300,10 @@ class ChatConsumer(WebsocketConsumer):
 				c.permissionStatus = 2
 				c.save()
 		async_to_sync(self.channel_layer.group_send)(
-					self.room_group_name,
-					{
-						'type': 'user_unmuted',
-						'email': userEmail
-					}
-				)
+			self.room_group_name,
+			{
+				'type': 'user_unmuted',
+				'email': userEmail
+			}
+		)
 

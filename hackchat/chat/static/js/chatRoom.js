@@ -280,7 +280,14 @@ chatSocket.onmessage = function(e) {
 			}
 			else
 			{
-				alert("ALERT: You have been muted for " + messageData['muteMinutes'] + " minutes.");
+				if (messageData['forBannedWord'] == true)
+				{
+					alert("ALERT: You have been muted for " + messageData['muteMinutes'] + " minutes because a previous message contained a banned word or phrase.");
+				}
+				else
+				{
+					alert("ALERT: You have been muted for " + messageData['muteMinutes'] + " minutes.");
+				}
 			}
 		}
 	}

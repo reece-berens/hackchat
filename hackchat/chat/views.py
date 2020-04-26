@@ -69,10 +69,10 @@ def room(request, roomName):
 	#Load all unread messages for the user in this channel
 	cp = ChannelPermissions.objects.filter(participantID=loggedInUser).get(channelID=currentChannel)
 	lastReadMessageID = cp.lastReadMessage
-	lastMessages = Message.objects.filter(channelID=currentChannel).filter(id__gt=lastReadMessageID).order_by('-id')[::-1]
+	lastMessages = Message.objects.filter(channelID=currentChannel).filter(id__gt=lastReadMessageID).filter(containsBannedPhrase=False).order_by('-id')[::-1]
 	#If we have read all of the messages, show the last few
 	if (len(lastMessages) == 0):
-		lastMessages = Message.objects.filter(channelID=currentChannel).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
+		lastMessages = Message.objects.filter(channelID=currentChannel).filter(containsBannedPhrase=False).order_by('-messageTimestamp')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
 
 	"""
 	msgsForSend = [
