@@ -206,6 +206,7 @@ var muteModalVue = new Vue({
 	data: {
 		participantEmail: '',
 		participantName: '',
+		token: myToken
 	},
 	methods: {
 		showMuteModal: function(email) {
@@ -224,7 +225,8 @@ var muteModalVue = new Vue({
 				messageType: 'muteUser',
 				requestingEmail: myEmail,
 				mutingEmail: this.participantEmail,
-				muteMinutes: parseInt(muteMinutes)
+				muteMinutes: parseInt(muteMinutes),
+				token: this.token
 			}));
 			console.log("Sent message to server");
 		}
@@ -356,7 +358,7 @@ function sendMute(id, muteTime) {
 	toSendDict['muteMinutes'] = muteTime;
 	toSendDict['requestingEmail'] = myEmail;
 	toSendDict['token'] = myToken;
-
+	console.log(toSendDict);
 	chatSocket.send(JSON.stringify(toSendDict));
 }
 
