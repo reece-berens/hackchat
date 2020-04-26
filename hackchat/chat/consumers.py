@@ -12,22 +12,38 @@ import threading, time
 
 utc = pytz.UTC
 
+def formatEmailForGroup(email):
+	return email.replace('@', 'AT')
+
 #SYNCHRONOUS VERSION
 class ChatConsumer(WebsocketConsumer):
 	def connect(self):
 		self.room_name = self.scope['url_route']['kwargs']['roomName']
 		print("self.room_name in connect is {}".format(self.room_name))
 		self.room_group_name = 'chat_%s' % self.room_name
+		print(self.scope['user'].email)
+		print(type(self.scope['user']))
 		#Join room group
 		async_to_sync(self.channel_layer.group_add)(
 			self.room_group_name,
 			self.channel_name
 		)
+		#Put the user in their own group for mutes and other things that are only for them
+		
+		async_to_sync(self.channel_layer.group_add)(
+			"user_{}".format(formatEmailForGroup(self.scope['user'].email)),
+			self.channel_name
+		)
+		
 		self.accept()
 
 	def disconnect(self, closeCode):
 		async_to_sync(self.channel_layer.group_discard)(
 			self.room_group_name,
+			self.channel_name
+		)
+		async_to_sync(self.channel_layer.group_discard)(
+			"user_{}".format(formatEmailForGroup(self.scope['user'].email)),
 			self.channel_name
 		)
 
@@ -50,7 +66,7 @@ class ChatConsumer(WebsocketConsumer):
 			if (token != authorObject.token):
 				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
 				async_to_sync(self.channel_layer.group_send)(
-					self.room_group_name,
+					"user_{}".format(formatEmailForGroup(authorObject.email)),
 					{
 						'type': 'error',
 						'email': author,
@@ -96,11 +112,11 @@ class ChatConsumer(WebsocketConsumer):
 					authorObject.muteUntilTime = timezone.localtime(timezone.now() + timedelta(minutes=muteTimeForBannedWord), pytz.timezone(settings.TIME_ZONE))
 					authorObject.save()
 					async_to_sync(self.channel_layer.group_send)(
-						self.room_group_name,
+						"user_{}".format(formatEmailForGroup(authorObject.email)),
 						{
 							'type': 'user_muted',
 							'email': authorObject.email,
-							'muteMinutes': 1,
+							'muteMinutes': muteTimeForBannedWord,
 							'forBannedWord': True
 						}
 					)
@@ -153,7 +169,7 @@ class ChatConsumer(WebsocketConsumer):
 			if (token != authorObject.token):
 				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
 				async_to_sync(self.channel_layer.group_send)(
-					self.room_group_name,
+					"user_{}".format(formatEmailForGroup(authorObject.email)),
 					{
 						'type': 'error',
 						'email': author,
@@ -178,7 +194,7 @@ class ChatConsumer(WebsocketConsumer):
 					c.permissionStatus = 1
 					c.save()
 			async_to_sync(self.channel_layer.group_send)(
-				self.room_group_name,
+				"user_{}".format(formatEmailForGroup(user.email)),
 				{
 					'type': 'user_muted',
 					'email': user.email,
@@ -197,6 +213,13 @@ class ChatConsumer(WebsocketConsumer):
 			authorObject = MLHUser.objects.filter(email=userEmail)[0]
 			if (token != authorObject.token):
 				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
+				async_to_sync(self.channel_layer.group_send)(
+					"user_{}".format(formatEmailForGroup(authorObject.email)),
+					{
+						'type': 'error',
+						'email': author,
+					}
+				)
 				return
 			cp = ChannelPermissions.objects.filter(participantID=authorObject).get(channelID=Channel.objects.get(channelName=channelName))
 			cp.lastReadMessage = lastMsgID
@@ -211,6 +234,13 @@ class ChatConsumer(WebsocketConsumer):
 			authorObject = MLHUser.objects.get(email=userEmail)
 			if (token != authorObject.token):
 				print("Author {} has an incorrect token: should be {} is {}".format(authorObject, authorObject.token, token))
+				async_to_sync(self.channel_layer.group_send)(
+					"user_{}".format(formatEmailForGroup(authorObject.email)),
+					{
+						'type': 'error',
+						'email': author,
+					}
+				)
 				return
 			filterChannel = Channel.objects.get(channelName=channelName)
 			validMessages = Message.objects.filter(channelID=filterChannel).filter(id__lt=earliestMsgID).filter(containsBannedPhrase=False).order_by('-id')[:settings.PREV_CHAT_MSGS_TO_LOAD][::-1]
@@ -228,7 +258,7 @@ class ChatConsumer(WebsocketConsumer):
 					'fromOrg': m.author.isOrganizer
 				})
 			async_to_sync(self.channel_layer.group_send)(
-				self.room_group_name,
+				"user_{}".format(formatEmailForGroup(authorObject.email)),
 				{
 					'type': 'previous_messages',
 					'email': authorObject.email,
@@ -300,7 +330,7 @@ class ChatConsumer(WebsocketConsumer):
 				c.permissionStatus = 2
 				c.save()
 		async_to_sync(self.channel_layer.group_send)(
-			self.room_group_name,
+			"user_{}".format(formatEmailForGroup(userEmail)),
 			{
 				'type': 'user_unmuted',
 				'email': userEmail
