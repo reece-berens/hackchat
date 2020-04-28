@@ -48,14 +48,17 @@ def room(request, roomName):
 	if (roomsInDB == 0):
 		return redirect('../')
 	currentChannel = Channel.objects.get(channelName = roomName)
+	cp = ChannelPermissions.objects.filter(participantID=loggedInUser).get(channelID=currentChannel)
+	if (cp.permissionStatus == 0):
+		#User doesn't have permission to view this webpage
+		return redirect('../')
 
 	#See if the user is currently muted
 	tzMuteUntilTime = timezone.localtime(loggedInUser.muteUntilTime, pytz.timezone(settings.TIME_ZONE))
 	nowDate = timezone.localtime(timezone.now(), pytz.timezone(settings.TIME_ZONE))
 
-	if (nowDate < tzMuteUntilTime):
-		#The user is currently muted, so we should not let them send the message
-		#print("The user is currently muted until {}".format(tzMuteUntilTime))
+	if (nowDate < tzMuteUntilTime or cp.permissionStatus == 1):
+		#The user is currently muted or doesn't have permission, so we should not let them send the message
 		context['startMuted'] = True
 	else:
 		context['startMuted'] = False
@@ -67,7 +70,6 @@ def room(request, roomName):
 	loggedInUser.save()
 
 	#Load all unread messages for the user in this channel
-	cp = ChannelPermissions.objects.filter(participantID=loggedInUser).get(channelID=currentChannel)
 	lastReadMessageID = cp.lastReadMessage
 	lastMessages = Message.objects.filter(channelID=currentChannel).filter(id__gt=lastReadMessageID).filter(containsBannedPhrase=False).order_by('-id')[::-1]
 	#If we have read all of the messages, show the last few
