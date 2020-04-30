@@ -194,3 +194,4 @@ def loadBannedWordList():
     return bannedList
 
 BANNED_WORD_LIST = loadBannedWordList()
+BANNED_PHRASE_TIME_TO_MUTE = int(os.getenv('BANNED_PHRASE_TIME_TO_MUTE'))

@@ -101,7 +101,7 @@ class ChatConsumer(WebsocketConsumer):
 			#print(Channel.objects.filter(channelName=roomName)[0].channelName)
 			#print(MLHUser.objects.filter(email=author)[0])
 			dbMsg.save()
-			muteTimeForBannedWord = 3
+			muteTimeForBannedWord = settings.BANNED_PHRASE_TIME_TO_MUTE
 			#Make sure no banned words are in the message
 			for bannedWord in settings.BANNED_WORD_LIST:
 				if (bannedWord in message.lower()):
