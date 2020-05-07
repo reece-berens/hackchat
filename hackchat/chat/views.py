@@ -13,7 +13,7 @@ def index(request):
 	#https://stackoverflow.com/questions/4642596/how-do-i-check-whether-this-user-is-anonymous-or-actually-a-user-on-my-system/4642607
 	if (request.user.is_anonymous):
 		#The user is not logged in, so we want to send them back to the login page
-		return redirect('../accounts/login/')
+		return redirect('../../accounts/login/')
 	print(request.user.is_anonymous)
 	context['user'] = {'loggedIn': True}
 	email = request.user
@@ -31,7 +31,7 @@ def room(request, roomName):
 	#https://stackoverflow.com/questions/4642596/how-do-i-check-whether-this-user-is-anonymous-or-actually-a-user-on-my-system/4642607
 	if (request.user.is_anonymous):
 		#The user is not logged in, so we want to send them back to the login page
-		return redirect('../accounts/login/')
+		return redirect('../../accounts/login/')
 	context['user'] = {'loggedIn': True}
 	email = request.user
 	loggedInUser = MLHUser.objects.get(email=email)
