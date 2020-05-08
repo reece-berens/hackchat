@@ -74,7 +74,7 @@ class ChatConsumer(WebsocketConsumer):
 				)
 				return
 
-			if (nowDate < tzMuteUntilTime):
+			if (nowDate < tzMuteUntilTime or authorObject.permanentMute):
 				#The user is currently muted, so we should not let them send the message
 				print("The user is currently muted until {}".format(tzMuteUntilTime))
 				return

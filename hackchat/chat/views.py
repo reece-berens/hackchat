@@ -57,7 +57,7 @@ def room(request, roomName):
 	tzMuteUntilTime = timezone.localtime(loggedInUser.muteUntilTime, pytz.timezone(settings.TIME_ZONE))
 	nowDate = timezone.localtime(timezone.now(), pytz.timezone(settings.TIME_ZONE))
 
-	if (nowDate < tzMuteUntilTime or cp.permissionStatus == 1):
+	if (nowDate < tzMuteUntilTime or cp.permissionStatus == 1 or loggedInUser.permanentMute == True):
 		#The user is currently muted or doesn't have permission, so we should not let them send the message
 		context['startMuted'] = True
 	else:
@@ -120,7 +120,7 @@ def room(request, roomName):
 #This will get the lists of all organizers and normal users for the participant column
 #Organizer list comes first, followed by normal user list
 def getParticipantList():
-	users = MLHUser.objects.order_by('last_name').order_by('first_name')
+	users = MLHUser.objects.order_by('-last_name').order_by('-first_name')
 	userList = []
 	for i in users:
 		userList.append({
